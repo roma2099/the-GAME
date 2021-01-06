@@ -36,7 +36,7 @@ def draw_backgound(screen, images, camera):
     num = 1
     for image in images:
         for i in range(0, num):
-            screen.blit(image, (i * image.get_width() - int(camera[0] * bg_move), 320 - image.get_height()))
+            screen.blit(image, (i * image.get_width() - int(camera[0] * bg_move), screen.get_height() - image.get_height()))
         bg_move += 0.05
         num += 1
 
@@ -61,13 +61,13 @@ def game_over():
     # START OF CODE ----------------------------------------------------------
 pygame.init()
 
-screen_size = (272 * 2, 160 * 2)
+screen_size = (272 * 4, 160 * 4)
 screen = pygame.display.set_mode(screen_size)
 
 bg = []
 
 for i in get_files_from_directory("sprites/background"):
-    x = img_load(i, 2)
+    x = img_load(i, 4)
 
     bg.append(x)
 
@@ -151,8 +151,8 @@ while True:
         game_over()
 
 # CAMERA ----------------------------------------------------------------------------------------------
-    camera[0]+=(mc.rect.centerx - camera[0]-272)/7
-    camera[1] +=(mc.rect.centery - camera[1]-190)/7
+    camera[0]+=(mc.rect.centerx - camera[0]-screen.get_height())/7
+    camera[1] +=(mc.rect.centery - camera[1]-screen.get_height()*(6/10))/7
 
 # ------------------------------------------------------------------------------------------------------
     mc.controle(k_up, k_down, k_left, k_right, k_space, k_x, False)
