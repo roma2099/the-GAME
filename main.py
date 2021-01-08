@@ -148,8 +148,8 @@ while True:
             elif event.key == pygame.K_LEFT:
                 k_left = False
 
-    if (mc.hp <= 0 or mc.rect.top > 700):
-        game_over()
+
+
 
 # CAMERA ----------------------------------------------------------------------------------------------
     camera[0]+=(mc.rect.centerx - camera[0]-screen.get_height())/7
