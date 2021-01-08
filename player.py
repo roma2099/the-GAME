@@ -11,17 +11,18 @@ class Player ():
         self.movement=[0,0]
         self.hp_max = 50
         self.hp = self.hp_max
-        self.img = {"run":[],"fall":[],"die":[],"hurt":[],"idle":[],"jump":[],"attack1":[],"attack2":[],"attack3":[]}
 
-        self.img_index = 0
-        self.img_on="idle"
+        self.frame = {"run":[],"fall":[],"die":[],"hurt":[],"idle":[],"jump":[],"attack1":[],"attack2":[],"attack3":[]}
+        self.frame_index = 0
+        self.frame_on="idle"
+
 
         # maybe u can make the rect_attack evry time o attack
         self.rect_attack = pygame.Rect(0, 0, 50, 150)
 
-        self.attack_on = 0
+        self.attack_on = False
         self.attack_combo=1
-        self.attack_next = 0
+        self.attack_next = False
 
 
         self.side_left = True
@@ -38,33 +39,41 @@ class Player ():
 
             i = pygame.transform.scale(pygame.image.load(asset), (150,111)).convert_alpha()
 
-            for key in self.img.keys():
+            for key in self.frame.keys():
                 if key in asset:
-                    self.img[key].append(i)
+                    self.frame[key].append(i)
 
-        self.rect = self.img[self.img_on][self.img_index].get_rect(topleft=(position))
+        self.rect = self.frame[self.frame_on][self.frame_index].get_rect(topleft=(position))
+        self.image = self.frame[self.frame_on][self.frame_index]
         #\ self.rect.width -= 13
-        print (self.img)
+        print (self.frame)
         return
     #This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
 
     def animation(self):
 
-        self.img_index+=1
-        if len(self.img[self.img_on])<=self.img_index:
-            self.img_index=0
-            if self.attack_on>0 :
-                self.attack_on=0
-
+        self.frame_index+=0.2
+        if len(self.frame[self.frame_on])<=self.frame_index:
+            self.frame_index=0
+            return True
+        return False
+    def update(self):
+        self.image = self.frame[self.frame_on][int(self.frame_index)]
 
     def controle(self,up,down,left,right,jump,k1,k2):
         #animation
-        if (self.attack_next==1 and self.attack_on== 0) or (self.attack_on!=0 and (self.img_on != "attack1" and self.img_on != "attack2" and self.img_on != "attack3")) :
+        if (self.animation()) or (self.attack_on==True and (self.img_on != "attack1" and self.img_on != "attack2" and self.img_on != "attack3")) :
+            self.attack_on=False
+            if self.attack_next ==True and self.attack_on==False:
+                if right and not left:
+                    self.side_left=False
+                elif not right and  left:
+                    self.side_left=True
 
-            if self.attack_next > 0 and self.attack_on==0:
-                self.attack_next = 0
-                self.attack_on = 1
+
+                self.attack_next = False
+                self.attack_on = True
                 self.attack_combo += 1
 
                 if self.attack_combo == 4:
@@ -73,25 +82,25 @@ class Player ():
                 self.attack_combo = 1
                 print(1)
 
-            self.img_on = "attack"+str(self.attack_combo)
+            self.frame = "attack"+str(self.attack_combo)
             print("attack"+str(self.attack_combo))
-            self.img_index = 0
 
-        elif self.movement[1] < 0 and self.img_on != "jump" and self.attack_on==0 :
-            self.img_on = "jump"
-            self.img_index = 0
 
-        elif self.movement[1] > 0 and self.img_on != "fall" and self.attack_on==0:
-            self.img_on = "fall"
-            self.img_index = 0
+        elif self.movement[1] < 0 and self.img_on != "jump" and self.attack_on==False:
+            self.frame_on = "jump"
+            self.frame_index = 0
 
-        elif (left or right) and self.img_on != "run" and self.num_jumps==0 and self.attack_on==0 :
-            self.img_on = "run"
-            self.img_index = 0
+        elif self.movement[1] > 0 and self.img_on != "fall" and self.attack_on==False:
+            self.frame_on = "fall"
+            self.frame_index = 0
 
-        elif self.movement[0]==0 and self.movement[1]==0 and self.img_on != "idle" and self.num_jumps == 0 and self.attack_on==0:
-            self.img_on = "idle"
-            self.img_index = 0
+        elif (left or right) and self.img_on != "run" and self.num_jumps==0 and self.attack_on==False :
+            self.frame_on = "run"
+            self.frame_index = 0
+
+        elif self.movement[0]==0 and self.movement[1]==0 and self.img_on != "idle" and self.num_jumps == 0 and self.attack_on==False:
+            self.frame_on = "idle"
+            self.frame_index = 0
 
 
 
@@ -113,11 +122,11 @@ class Player ():
         if jump and self.num_jumps<2 and down==False :
             self.movement[1]=-15
             self.num_jumps+=1
-        if down and self.movement[1]==0 and self.num_jumps==0:
-            self.rect.height=self.rect.height/2
-            self.rect.y+=self.rect.height/2
-        else:
-            self.rect.height = self.img["idle"][0].get_rect(center=(100,100) ).height
+        #if down and self.movement[1]==0 and self.num_jumps==0:
+        #    self.rect.height=self.rect.height/2
+        #    self.rect.y+=self.rect.height/2
+        #else:
+        #    self.rect.height = self.frame["idle"][0].get_rect(center=(100,100) ).height
 
         #Side movement
         if right and left :
@@ -134,13 +143,13 @@ class Player ():
 
         if k1:
 
-            self.attack_next=1
+            self.attack_next=True
 
 
-        if self.attack_next==1 and self.attack_on==0:
+        if self.attack_next==True and self.attack_on==False:
 
-            self.attack_next = 0
-            self.attack_on = 1
+            self.attack_next = False
+            self.attack_on = True
         return
 
 
@@ -219,17 +228,13 @@ class Player ():
         return
 
     def draw(self,screen,camera=(0,0)):
-
-
-        if self.side_left:
-
-            screen.blit(pygame.transform.flip(self.img[self.img_on][self.img_index],True,False), (self.rect.x-camera[0],self.rect.y-camera[1]))
-        else:
-            screen.blit(self.img[self.img_on][self.img_index],(self.rect.x-camera[0],self.rect.y-camera[1]))
+        screen.blit(pygame.transform.flip(self.image,self.side_left,False), (self.rect.x-camera[0],self.rect.y-camera[1]))
 
 
 
-        return
+
+
+
 
     def die(self):
         if self.hp<=0:

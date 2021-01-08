@@ -110,8 +110,9 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == BIRDFLAP:
-            mc.animation()
+        #if event.type == BIRDFLAP:
+        #    mc.animation()
+        #I whant to now when the animation , so i need to animated inside the controle
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
                 k_down = True
@@ -176,7 +177,7 @@ while True:
         #     enemy.draw_player(screen,(255, 50, 50))
     for enemy in enemies_list:
         enemy.draw(screen,camera)
-
+    mc.update()
     mc.draw(screen,camera)
 
     pygame.display.update()
