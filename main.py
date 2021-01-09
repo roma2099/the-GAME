@@ -6,7 +6,20 @@
 import pygame, player, sys, os, tile, enemy, accessorie, pickle
 
 
+def make_dic_images(files,):
+    frame={"run":[],"fall":[],"die":[],"hurt":[],"idle":[],"jump":[],"attack1":[],"attack2":[],"attack3":[]}
+    for asset in files:
+        # fuction img_load in main makes the load and scaling
+        # 2 IS THE SCALE
+        i = pygame.image.load(asset).convert_alpha()
+        i = pygame.transform.scale(i, (2 * i.get_rect().size[0], 2 * i.get_rect().size[1]))
 
+        i = pygame.transform.scale(pygame.image.load(asset), (150, 111)).convert_alpha()
+
+        for key in frame.keys():
+            if key in asset:
+                frame[key].append(i)
+    return frame
 
 def img_load(file_directory, scale):
     img = pygame.image.load(file_directory).convert_alpha()
@@ -15,7 +28,7 @@ def img_load(file_directory, scale):
 
 def get_map(directory):
     tile.Tile.img.append(img_load("sprites/tiles/Tile_1.png", 2))
-    enemy.Enemy.img.append(img_load("sprites/Enemies/Idle 1.png", 2))
+
 
     tile_list = []
     enemies_list = []
@@ -69,8 +82,9 @@ for i in get_files_from_directory("sprites/background"):
     bg.append(x)
 
     ##bg.fill((100, 200, 150))
-
-mc = player.Player(get_files_from_directory("sprites/Individual Sprites"), (100, 100))
+frame=make_dic_images(get_files_from_directory("sprites/Individual Sprites"))
+print(frame)
+mc = player.Player(frame, (100, 100))
 
 # HACK
 mc.movement = [0, 0]
@@ -172,8 +186,8 @@ while True:
         #     if enemy.die():
         #         enemys.remove(enemy)
         #     enemy.draw_player(screen,(255, 50, 50))
-    for enemy in enemies_list:
-        enemy.draw(screen,camera)
+#    for enemy in enemies_list:
+ #       enemy.draw(screen,camera)
     mc.update()
     mc.draw(screen,camera)
 

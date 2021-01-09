@@ -1,48 +1,22 @@
-import pygame,enteties
+import pygame,caracter
 
-class Player (enteties.Entetie):
+class Player (caracter.Caracter):
 
 
     def __init__(self,files=[],position=(0,0),movement=0):
 
 
 
-
-        self.movement=[0,0]
-        self.hp_max = 50
-        self.hp = self.hp_max
-
-        self.frame = {"run":[],"fall":[],"die":[],"hurt":[],"idle":[],"jump":[],"attack1":[],"attack2":[],"attack3":[]}
-        self.frame_index = 0
-        self.frame_on="idle"
-
-
         # maybe u can make the rect_attack evry time o attack
-        self.rect_attack = pygame.Rect(0, 0, 50, 150)
+
 
         self.attack_on = False
         self.attack_combo=1
         self.attack_next = False
 
-
-        self.side_left = True
-        self.run_speed = 10
         self.num_jumps = 0
-        self.hurt = False
-
-
-        for asset in files:
-            #fuction img_load in main makes the load and scaling
-            #2 IS THE SCALE
-            i = pygame.image.load(asset).convert_alpha()
-            i= pygame.transform.scale(i, (2 * i.get_rect().size[0], 2 * i.get_rect().size[1]))
-
-            i = pygame.transform.scale(pygame.image.load(asset), (150,111)).convert_alpha()
-
-            for key in self.frame.keys():
-                if key in asset:
-                    self.frame[key].append(i)
-        super(Player, self).__init__(self.frame[self.frame_on][self.frame_index], position)
+        
+        super(Player, self).__init__(files,position,movement)
 
         #\ self.rect.width -= 13
 
@@ -50,16 +24,6 @@ class Player (enteties.Entetie):
     #This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
 
-    def animation(self):
-
-        self.frame_index+=0.4
-        if len(self.frame[self.frame_on])<=self.frame_index:
-            self.frame_index=0
-            return True
-        return False
-    def update(self):
-        print(self.frame_on + "___"+str(int(self.frame_index)))
-        self.image = self.frame[self.frame_on][int(self.frame_index)]
 
     def controle(self, up, down, left, right, jump, k1, k2):
         # animation
@@ -144,52 +108,7 @@ class Player (enteties.Entetie):
         return
 
 
-    def move(self,barreiras):
-        #Mudar depois, pq se colidir em duas barreiras do mesmo lado, por exemplo a direita e detectar primeiro a menos aa direita a posisao sera atualizada para a barreiramais a direita, assim atravesando a menos a direita!!!
 
-        #gravidade talvez fique no controle
-
-        self.gravity()
-
-        # mover no y
-        self.rect.y += self.movement[1]
-        # lista das barreiras que colidio
-
-        collisinons = self.move_collision(barreiras)
-        for barreira in collisinons:
-            if self.movement[1] < 0:
-                self.rect.top = barreira.bottom
-                self.movement[1] = 0
-            if self.movement[1] > 0:
-                self.rect.bottom = barreira.top
-                self.movement[1] = 0
-                self.num_jumps = 0
-
-        #mover no x
-        self.rect.x+=self.movement[0]
-        #lista das barreiras que colidio
-        collisinons=self.move_collision(barreiras)
-        for barreira in collisinons:
-            if self.movement[0]<0:
-                self.rect.left=barreira.right
-            if self.movement[0] > 0:
-                self.rect.right = barreira.left
-
-
-
-        return
-    def move_collision(self,barreiras):
-        collision=[]
-
-        for barreira in barreiras:
-
-            if self.rect.colliderect(barreira.rect):
-                collision.append(barreira.rect)
-        return collision
-
-
-    #Should I use just the rect of the enemy or the hole class
-    #
     def attack(self,enemy):
         self.attack_on=10
         if self.side_left:
@@ -204,28 +123,3 @@ class Player (enteties.Entetie):
         return self.rect_attack.colliderect(enemy)
 
 
-
-
-
-
-    def __getattr__(self, item):
-            return
-
-
-    def gravity(self):
-        if self.movement[1]<50:
-            self.movement[1]+=1
-        return
-
-
-
-
-
-
-
-
-
-    def die(self):
-        if self.hp<=0:
-            return True
-        return False
