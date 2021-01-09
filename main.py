@@ -6,15 +6,15 @@
 import pygame, player, sys, os, tile, enemy, accessorie, pickle
 
 
-def make_dic_images(files,):
-    frame={"run":[],"fall":[],"die":[],"hurt":[],"idle":[],"jump":[],"attack1":[],"attack2":[],"attack3":[]}
+def make_dic_images(files,actions):
+    frame={}
+    for action in actions :
+        frame[action]=[]
     for asset in files:
         # fuction img_load in main makes the load and scaling
         # 2 IS THE SCALE
-        i = pygame.image.load(asset).convert_alpha()
-        i = pygame.transform.scale(i, (2 * i.get_rect().size[0], 2 * i.get_rect().size[1]))
 
-        i = pygame.transform.scale(pygame.image.load(asset), (150, 111)).convert_alpha()
+        i = img_load(asset,3)
 
         for key in frame.keys():
             if key in asset:
@@ -82,8 +82,8 @@ for i in get_files_from_directory("sprites/background"):
     bg.append(x)
 
     ##bg.fill((100, 200, 150))
-frame=make_dic_images(get_files_from_directory("sprites/Individual Sprites"))
-print(frame)
+frame=make_dic_images(get_files_from_directory("sprites/Individual Sprites"),["run","fall","die","hurt","idle","jump","attack1","attack2","attack3"])
+
 mc = player.Player(frame, (100, 100))
 
 # HACK

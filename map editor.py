@@ -4,6 +4,7 @@ from tile import *
 from enemy import *
 from accessorie import *
 
+
 def check_object_in_list(object,object_list):
 
     for i in object_list:
@@ -18,8 +19,8 @@ def add_and_remove(Entety,entety_list,cousor_entety,camera ):
 
     if pygame.mouse.get_pressed() == (1, 0, 0):
         entety_i = Entety(0, 0, 0)
-        entety_i.rect.x = cousor_entety.rect.x+ camera[0]
-        entety_i.rect.y = cousor_entety.rect.y+camera[1]
+        entety_i.rect.x = cousor_entety.rect.x+ int(camera[0]/32)*32
+        entety_i.rect.y = cousor_entety.rect.y+ int(camera[1]/32)*32
 
         if check_object_in_list(entety_i, entety_list) == None:
             entety_list.append(entety_i)
@@ -48,11 +49,10 @@ def main():
     keepGoing = True
 
     Tile.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
-    Enemy.img.append((pygame.image.load("sprites/Enemies/Idle 1.png").convert_alpha()))
-    Enemy.img.append((pygame.image.load("sprites/Enemies/Idle 2.png").convert()))
+    #Enemy.frame=make_dic_images(get_files_from_directory("sprites/Enemy"),["idle"])
     #Accessorie.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
     one_tile=Tile(0,0,0)
-    one_enemies = Enemy(0, 0, 0)
+    #one_enemies = Enemy(0, 0, 0)
    #one_accessories = Accessorie(0, 0, 0)
 
     tile_list = []
@@ -167,7 +167,7 @@ def main():
             i.draw(screen,camera)
 
         if choise==1:
-            one_tile.draw(screen,(0,0))
+            one_tile.draw(screen,(-camera[0]%32,-camera[1]%32))
         else:
             one_enemies.draw(screen,(0,0))
 

@@ -1,8 +1,10 @@
 import pygame
 class Entetie:
-    def __init__(self,img,position):
-        self.image=img
-        self.rect=self.image.get_rect(topleft=position)
+    def __init__(self,img,position,side_left=False):
+        if img!=None:
+            self.image=img
+            self.rect=self.image.get_rect(topleft=position)
+        self.side_left
 
         return
 
