@@ -1,40 +1,37 @@
-import pygame,caracter
-
-class Player (caracter.Caracter):
+import pygame, caracter
 
 
-    def __init__(self,files=[],position=(0,0),movement=0):
+class Player(caracter.Caracter):
 
-
+    def __init__(self, files=[], position=(0, 0), movement=0):
 
         # maybe u can make the rect_attack evry time o attack
-
+        super(Player, self).__init__(files, position, movement)
 
         self.attack_on = False
-        self.attack_combo=1
+        self.attack_combo = 1
         self.attack_next = False
 
         self.num_jumps = 0
-        
-        super(Player, self).__init__(files,position,movement)
 
-        #\ self.rect.width -= 13
+        self.hit_box = pygame.Rect(7, 8, 20 * 3, 27 * 3)
+        # \ self.rect.width -= 13
 
         return
-    #This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
-
+    # This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
     def controle(self, up, down, left, right, jump, k1, k2):
         # animation
         if self.animation():
-            self.attack_on=False
-        if (self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3")):
-            if self.attack_next ==True and self.attack_on==False:
+            self.attack_on = False
+        if (self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (
+                self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3")):
+            if self.attack_next == True and self.attack_on == False:
                 if right and not left:
-                    self.side_left=False
-                elif not right and  left:
-                    self.side_left=True
+                    self.side_left = False
+                elif not right and left:
+                    self.side_left = True
             if (self.attack_next == True) and self.attack_on == False:
                 self.attack_next = False
                 self.attack_on = True
@@ -80,11 +77,11 @@ class Player (caracter.Caracter):
         if jump and self.num_jumps < 2 and down == False:
             self.movement[1] = -15
             self.num_jumps += 1
-        if down and self.movement[1] == 0 and self.num_jumps == 0:
-            self.rect.height = self.rect.height / 2
-            self.rect.y += self.rect.height / 2
-        else:
-            self.rect.height = self.frame["idle"][0].get_rect(center=(100, 100)).height
+        # if down and self.movement[1] == 0 and self.num_jumps == 0:
+        #    self.rect.height = self.rect.height / 2
+        #    self.rect.y += self.rect.height / 2
+        # else:
+        #    self.rect.height = self.frame["idle"][0].get_rect(center=(100, 100)).height
 
         # Side movement
         if right and left:
@@ -107,19 +104,21 @@ class Player (caracter.Caracter):
             self.attack_on = True
         return
 
-
-
-    def attack(self,enemy):
-        self.attack_on=10
+    def attack(self, enemy):
+        self.attack_on = 10
         if self.side_left:
-            self.rect_attack.midright=self.rect.midleft
+            self.rect_attack.midright = self.rect.midleft
             print(self.side_left)
         else:
             self.rect_attack.midleft = self.rect.midright
             print(self.side_left)
 
-        #I need to know in what side they got hit on
+        # I need to know in what side they got hit on
 
         return self.rect_attack.colliderect(enemy)
 
+    def draw(self, screen, camera=(0, 0)):
 
+        super(Player, self).draw(screen, camera)
+        if self.test_mode:
+            screen.blit(pygame.Surface(self.hit_box.size), (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
