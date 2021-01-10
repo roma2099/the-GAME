@@ -7,7 +7,7 @@ class Entetie:
         if img != None:
             self.image = img
             self.rect = self.image.get_rect(topleft=position)
-        self.side_left
+        self.side_left=False
         return
 
     def draw(self, screen, camera=(0, 0)):

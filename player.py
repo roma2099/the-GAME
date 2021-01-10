@@ -47,6 +47,10 @@ class Player(caracter.Caracter):
             print("attack" + str(self.attack_combo))
             self.frame_index = 0
 
+        elif self.hit_box.height !=27 * 3 and self.frame_on != "crouch":
+            self.frame_on = "crouch"
+            self.frame_index = 0
+
         elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False:
             self.frame_on = "jump"
             self.frame_index = 0
@@ -55,14 +59,14 @@ class Player(caracter.Caracter):
             self.frame_on = "fall"
             self.frame_index = 0
 
-        elif (left or right) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False:
+        elif (left or right) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0 and self.hit_box.height ==27 * 3:
             self.frame_on = "run"
             self.frame_index = 0
 
-        elif self.movement[0] == 0 and self.movement[
-            1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False:
+        elif self.hit_box.height ==27 * 3 and self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False:
             self.frame_on = "idle"
             self.frame_index = 0
+
 
         #       if self.attack_next == 1 :
         #          if self.attack_on==1 :
@@ -77,19 +81,20 @@ class Player(caracter.Caracter):
         if jump and self.num_jumps < 2 and down == False:
             self.movement[1] = -15
             self.num_jumps += 1
-        # if down and self.movement[1] == 0 and self.num_jumps == 0:
-        #    self.rect.height = self.rect.height / 2
-        #    self.rect.y += self.rect.height / 2
-        # else:
-        #    self.rect.height = self.frame["idle"][0].get_rect(center=(100, 100)).height
+        if down and self.movement[1] == 0 and self.num_jumps == 0 and self.hit_box.height ==27 * 3:
+            self.hit_box.height = self.hit_box.height / 2
+            self.hit_box.y += self.rect.height / 2
+        elif not down and self.hit_box.height !=27 * 3:
+            self.hit_box.y-=self.hit_box.height
+            self.hit_box.height =27 * 3
 
         # Side movement
         if right and left:
             self.movement[0] = 0
-        elif right and left == False and self.attack_on == False:
+        elif right and left == False and self.attack_on == False and self.hit_box.height ==27 * 3:
             self.side_left = False
             self.movement[0] = self.run_speed
-        elif right == False and left and self.attack_on == False:
+        elif right == False and left and self.attack_on == False and self.hit_box.height ==27 * 3:
             self.side_left = True
             self.movement[0] = -self.run_speed
         else:

@@ -22,7 +22,7 @@ class Caracter(enteties.Entetie):
 
     def animation(self):
 
-        self.frame_index += 0.4
+        self.frame_index += 13*(1/40)
         if len(self.frame[self.frame_on]) <= self.frame_index:
             self.frame_index = 0
             return True

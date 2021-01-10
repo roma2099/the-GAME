@@ -85,7 +85,7 @@ for i in get_files_from_directory("sprites/background"):
 
     ##bg.fill((100, 200, 150))
 frame = make_dic_images(get_files_from_directory("sprites/Individual Sprites"),
-                        ["run", "fall", "die", "hurt", "idle", "jump", "attack1", "attack2", "attack3"])
+                        ["run", "fall", "die", "hurt", "idle","crouch", "jump", "attack1", "attack2", "attack3"])
 
 mc = player.Player(frame, (100, 100))
 
