@@ -1,10 +1,12 @@
 import pygame
 
 
-class Entetie:
+class Entetie(pygame.sprite.Sprite):
     def __init__(self, img, position, side_left=False):
+        pygame.sprite.Sprite.__init__(self)
         self.test_mode = False
         if img != None:
+
             self.image = img
             self.rect = self.image.get_rect(topleft=position)
         self.side_left=False

@@ -1,5 +1,7 @@
 import pygame
 import pickle
+
+from fuctions import *
 from tile import *
 from enemy import *
 from accessorie import *
@@ -16,16 +18,16 @@ def add_and_remove(Entety, entety_list, cousor_entety, camera):
                                       int(pygame.mouse.get_pos()[1] / 32) * 32)
 
     if pygame.mouse.get_pressed() == (1, 0, 0):
-        entety_i = Entety(0, 0, 0)
+        entety_i = Entety((0, 0), 0)
         entety_i.rect.x = cousor_entety.rect.x + int(camera[0] / 32) * 32
         entety_i.rect.y = cousor_entety.rect.y + int(camera[1] / 32) * 32
 
         if check_object_in_list(entety_i, entety_list) == None:
             entety_list.append(entety_i)
-        print(entety_list)
+
 
     if pygame.mouse.get_pressed() == (0, 0, 1):
-        entety_i = Entety(0, 0, 0)
+        entety_i = Entety((0, 0), 0)
         entety_i.rect.x = cousor_entety.rect.x + camera[0]
         entety_i.rect.y = cousor_entety.rect.y + camera[0]
 
@@ -35,7 +37,7 @@ def add_and_remove(Entety, entety_list, cousor_entety, camera):
         print(entety_list)
 
 
-def main():
+def editor():
     pygame.init()
     screen = pygame.display.set_mode((640, 480))
 
@@ -46,11 +48,11 @@ def main():
     keepGoing = True
 
     Tile.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
-    # Enemy.frame=make_dic_images(get_files_from_directory("sprites/Enemy"),["idle"])
+    Enemy.frame=make_dic_images(get_files_from_directory("sprites/Enemies"),["idle"])
     # Accessorie.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
-    one_tile = Tile(0, 0, 0)
-    # one_enemies = Enemy(0, 0, 0)
-    # one_accessories = Accessorie(0, 0, 0)
+    one_tile = Tile((0, 0), 0)
+    one_enemies = Enemy((0, 0),0)
+#    one_accessories = Accessorie((0, 0), 0)
 
     tile_list = []
     enemies_list = []
@@ -108,7 +110,6 @@ def main():
                             a.rect.y *= 2
 
                         list = [accessories_list, tile_list, enemies_list]
-                        print(list)
                         pickle.dump(list, map_file)
                         keepGoing = False
 
@@ -163,12 +164,15 @@ def main():
         for i in enemies_list:
             i.draw(screen, camera)
 
+
         if choise == 1:
             one_tile.draw(screen, (-camera[0] % 32, -camera[1] % 32))
         else:
             one_enemies.draw(screen, (0, 0))
 
+
         pygame.display.update()
 
 
-main()
+
+editor()

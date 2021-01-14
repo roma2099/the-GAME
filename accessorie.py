@@ -4,7 +4,7 @@ import pygame
 class Accessorie:
     img = []
 
-    def __init__(self, x, y, index):
+    def __init__(self, x, y, index=0):
         self.index = index
         self.rect = pygame.Rect(
             Accessorie.img[0].get_width() * x,

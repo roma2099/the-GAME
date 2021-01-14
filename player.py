@@ -2,19 +2,19 @@ import pygame, caracter
 
 
 class Player(caracter.Caracter):
-
-    def __init__(self, files=[], position=(0, 0), movement=0):
+    frame={}
+    def __init__(self, position=(0, 0)):
 
         # maybe u can make the rect_attack evry time o attack
-        super(Player, self).__init__(files, position, movement)
-
+        super(Player, self).__init__(position)
+        self.rect = Player.frame[self.frame_on][self.frame_index].get_rect(topleft=position)
         self.attack_on = False
         self.attack_combo = 1
         self.attack_next = False
-
+        self.hit_box = pygame.Rect(7, 8, 20 * 3, 27 * 3)
         self.num_jumps = 0
 
-        self.hit_box = pygame.Rect(7, 8, 20 * 3, 27 * 3)
+
         # \ self.rect.width -= 13
 
         return
@@ -109,21 +109,28 @@ class Player(caracter.Caracter):
             self.attack_on = True
         return
 
-    def attack(self, enemy):
-        self.attack_on = 10
-        if self.side_left:
-            self.rect_attack.midright = self.rect.midleft
-            print(self.side_left)
-        else:
-            self.rect_attack.midleft = self.rect.midright
-            print(self.side_left)
-
+    def attack(self, character,screen=None,camera=[0,0]):
+        if self.attack_on:
+            attack_range = pygame.Rect(10, 10, 100, 100)
+            if self.side_left:
+                attack_range.midright = self.hit_box.midleft
+            else:
+                attack_range.midleft = self.hit_box.midright
+            pygame.draw.rect(screen,(255,50,30),(attack_range.x-camera[0],attack_range.y-camera[1],attack_range.width,attack_range.height))
         # I need to know in what side they got hit on
 
-        return self.rect_attack.colliderect(enemy)
+            return attack_range.colliderect(character.hit_box)
 
     def draw(self, screen, camera=(0, 0)):
+        screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
 
-        super(Player, self).draw(screen, camera)
         if self.test_mode:
+
             screen.blit(pygame.Surface(self.hit_box.size), (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
+    def animation(self):
+
+        self.frame_index += 13*(1/40)
+        if len(Player.frame[self.frame_on]) <= self.frame_index:
+            self.frame_index = 0
+            return True
+        return False

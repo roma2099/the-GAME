@@ -4,41 +4,9 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 import pygame, player, sys, os, tile, enemy, accessorie, pickle
+from fuctions import *
 
 
-def make_dic_images(files, actions):
-    frame = {}
-    for action in actions:
-        frame[action] = []
-    for asset in files:
-        # fuction img_load in main makes the load and scaling
-        # 2 IS THE SCALE
-
-        i = img_load(asset, 3)
-
-        for key in frame.keys():
-            if key in asset:
-                frame[key].append(i)
-    return frame
-
-
-def img_load(file_directory, scale):
-    img = pygame.image.load(file_directory).convert_alpha()
-    return pygame.transform.scale(img, (scale * img.get_rect().size[0], scale * img.get_rect().size[1]))
-
-
-def get_map(directory):
-    tile.Tile.img.append(img_load("sprites/tiles/Tile_1.png", 2))
-
-    tile_list = []
-    enemies_list = []
-    accessories_list = []
-    with open("maps/map_1.txt", "rb") as map_file:
-        list = pickle.load(map_file)
-
-        accessories_list, tile_list, enemies_list = list[0], list[1], list[2]
-
-    return accessories_list, tile_list, enemies_list
 
 
 def draw_backgound(screen, images, camera):
@@ -54,15 +22,7 @@ def draw_backgound(screen, images, camera):
     return
 
 
-def get_files_from_directory(directory):
-    files = os.listdir(directory)
 
-    i = 0
-    for file in files:
-        files[i] = directory + "/" + file
-        i += 1
-
-    return files
 
 
 def game_over():
@@ -84,16 +44,21 @@ for i in get_files_from_directory("sprites/background"):
     bg.append(x)
 
     ##bg.fill((100, 200, 150))
-frame = make_dic_images(get_files_from_directory("sprites/Individual Sprites"),
-                        ["run", "fall", "die", "hurt", "idle","crouch", "jump", "attack1", "attack2", "attack3"])
 
-mc = player.Player(frame, (100, 100))
+
+player.Player.frame=make_dic_images(get_files_from_directory("sprites/Individual Sprites"),["run", "fall", "die", "hurt", "idle","crouch", "jump", "attack1", "attack2", "attack3"])
+enemy.Enemy.frame=make_dic_images(get_files_from_directory("sprites/Enemies"),["idle"])
+mc = player.Player( (100, 100))
 
 # HACK
-mc.movement = [0, 0]
+
 
 accessories_list, barriers, enemies_list = get_map("sprites/tiles")
+for x in enemies_list:
+    x.hit_box=x.rect
+    x.test_mode=True
 
+print(enemies_list)
 camera = [0, 0]
 
 clock = pygame.time.Clock()
@@ -109,6 +74,9 @@ k_r = False
 
 BIRDFLAP = pygame.USEREVENT + 1
 pygame.time.set_timer(BIRDFLAP, 80)
+
+e=enemy.Enemy((200 ,200))
+e.hp,e.hp_max=5000,5000
 
 # GAME LOOP-------------------------------------------------------------------------------
 
@@ -126,7 +94,7 @@ while True:
         #    mc.animation()
         # I whant to now when the animation , so i need to animated inside the controle
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame .K_DOWN:
                 k_down = True
 
             if event.key == pygame.K_UP:
@@ -168,12 +136,23 @@ while True:
     mc.controle(k_up, k_down, k_left, k_right, k_space, k_x, False)
 
     mc.move(barriers)
-    for enemy in enemies_list:
-        enemy.move(barriers)
-    draw_backgound(screen, bg, camera)
 
+
+
+
+    draw_backgound(screen, bg, camera)
+    e.draw(screen, camera)
+    e.move(barriers)
+
+    if mc.attack(e, screen, camera):
+        e.hp -= 1
+        print(e.hp)
     for barreira in barriers:
         barreira.draw(screen, camera)
+    for r in enemies_list:
+
+        r.draw(screen, camera)
+        r.move(barriers)
 
         #      if k_x :
         #         for enemy in enemys:
@@ -188,6 +167,7 @@ while True:
     #       enemy.draw(screen,camera)
     mc.update()
     mc.draw(screen, camera)
+
 
     pygame.display.update()
     clock.tick(40)
