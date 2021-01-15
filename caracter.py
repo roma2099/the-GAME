@@ -61,7 +61,7 @@ class Caracter(enteties.Entetie):
                 self.hit_box.left = barreira.right
             if self.movement[0] > 0:
                 self.hit_box.right = barreira.left
-        self.rect.midbottom = self.hit_box.midbottom
+        self.rect.center = self.hit_box.center
 
         return
 

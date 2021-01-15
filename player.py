@@ -26,7 +26,7 @@ class Player(caracter.Caracter):
         if self.animation():
             self.attack_on = False
         if (self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (
-                self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3")):
+                self.frame_on != "attack1" and self.frame_on != "attack2" )):
             if self.attack_next == True and self.attack_on == False:
                 if right and not left:
                     self.side_left = False

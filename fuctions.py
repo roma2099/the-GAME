@@ -20,7 +20,7 @@ def get_files_from_directory(directory):
 
     return files
 def get_map(directory):
-    tile.Tile.img.append(img_load("sprites/tiles/Tile_1.png", 2))
+    tile.Tile.img.append(img_load(r"sprites/tiles/Tile_1.png", 2))
 
     tile_list = []
     enemies_list = []
