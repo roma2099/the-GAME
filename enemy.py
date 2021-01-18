@@ -17,7 +17,7 @@ class Enemy(caracter.Caracter):
 
 
     def draw(self, screen, camera=(0, 0)):
-        screen.blit(pygame.transform.flip(Enemy.frame[self.frame_on][self.frame_index], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
+        screen.blit(pygame.transform.flip(Enemy.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
         #if self.test_mode:
          #   screen.blit(pygame.Surface(self.hit_box.size), (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
 

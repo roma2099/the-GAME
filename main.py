@@ -46,8 +46,8 @@ for i in get_files_from_directory("sprites/background"):
     ##bg.fill((100, 200, 150))
 
 
-player.Player.frame= make_dic_images(get_files_from_directory("sprites/player/Adveturer/individual"),["run", "fall", "die", "hurt", "idle", "crouch", "jump", "attack1", "attack2","attack3"])
-enemy.Enemy.frame= make_dic_images(get_files_from_directory("sprites/Enemies"), ["idle"])
+player.Player.frame= make_dic_images(get_files_from_directory("sprites/player/Hero Knight/individual"),["run", "fall", "die", "hurt", "idle", "crouch", "jump", "attack1", "attack2","attack3"])
+enemy.Enemy.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Goblin/individual"), ["idle","run","death","attack","shield","take"])
 mc = player.Player( (100, 100))
 
 # HACK
@@ -143,6 +143,7 @@ while True:
     draw_backgound(screen, bg, camera)
     e.draw(screen, camera)
     e.move(barriers)
+    e.animation()
 
     if mc.attack(e, screen, camera):
         e.hp -= 1
