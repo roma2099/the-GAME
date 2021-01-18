@@ -48,7 +48,7 @@ def editor():
     keepGoing = True
 
     Tile.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
-    Enemy.frame=make_dic_images(get_files_from_directory("sprites/Enemies"),["idle"])
+    Enemy.frame= make_dic_images(get_files_from_directory("sprites/Enemies"), ["idle"])
     # Accessorie.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
     one_tile = Tile((0, 0), 0)
     one_enemies = Enemy((0, 0),0)

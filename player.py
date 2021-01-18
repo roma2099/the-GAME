@@ -37,7 +37,7 @@ class Player(caracter.Caracter):
                 self.attack_on = True
                 self.attack_combo += 1
 
-                if self.attack_combo == 4:
+                if self.attack_combo == 3:
                     self.attack_combo = 1
             else:
                 self.attack_combo = 1

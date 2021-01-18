@@ -14,7 +14,7 @@ def get_files_from_directory(directory):
 
     i = 0
     for file in files:
-        files[i] = directory + "/" + file.lower()
+        files[i] = directory + "\\" + file.lower()
 
         i += 1
 
@@ -32,7 +32,7 @@ def get_map(directory):
 
     return accessories_list, tile_list, enemies_list
 
-def make_dic_images(files, actions):
+def make_dic_images(files, actions, scale=3):
     frame = {}
     for action in actions:
         frame[action] = []
@@ -40,7 +40,7 @@ def make_dic_images(files, actions):
         # fuction img_load in main makes the load and scaling
         # 2 IS THE SCALE
 
-        i = img_load(asset, 3)
+        i = img_load(asset, scale)
 
         for key in frame.keys():
             if key in asset:
