@@ -12,6 +12,8 @@ class Tile(enteties.Entetie):
             Tile.img[0].get_width(),
             Tile.img[0].get_height()
         )
+        self.midright=self.rect.midright
+        self.midleft = self.rect.midleft
         self.index = index
 
     def draw(self, screen, camera):

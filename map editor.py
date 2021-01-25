@@ -37,7 +37,7 @@ def add_and_remove(Entety, entety_list, cousor_entety, camera):
         obj_remove = check_object_in_list(entety_i, entety_list)
         if obj_remove != None:
             entety_list.remove(obj_remove)
-        print(entety_list)
+
 
 
 def editor():

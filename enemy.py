@@ -1,4 +1,5 @@
-import pygame, caracter
+import pygame, caracter,tile
+
 
 
 class Enemy(caracter.Caracter):
@@ -14,12 +15,13 @@ class Enemy(caracter.Caracter):
         self.hit_box=self.rect
         self.num_jumps = 0
         print(self.hit_box)
+        self.limits=(100,400)
 
         self.set_hit_box(self.rect)
     def ai(self,player,list_tile):
         up, down, left, right, jump, k1, k2=False,False,False,False,False,False,False
-        if self.rect.centerx-player.rect.centerx <= 400 and self.rect.centerx-player.rect.centerx >= -400 :
-            if self.rect.centerx-player.rect.centerx <= 100 and self.rect.centerx-player.rect.centerx >= -100 :
+        if self.rect.centerx-player.rect.centerx <= 210 and self.rect.centerx-player.rect.centerx >= -210 :
+            if self.rect.centerx-player.rect.centerx <= 90 and self.rect.centerx-player.rect.centerx >= -90 :
                 left = False
                 right = False
                 k1=True
@@ -32,9 +34,22 @@ class Enemy(caracter.Caracter):
 
                 left =False
                 right=True
-            else :
+        else :
+            if self.hit_box.right>=self.limits[1]:
+                self.side_left = True
+            elif self.hit_box.left<=self.limits[0]:
+                self.side_left = False
+
+
+            if self.side_left:
+                left=True
+                right =False
+
+
+            else:
                 left = False
-                right = False
+                right = True
+
 
 
 
@@ -133,3 +148,87 @@ class Enemy(caracter.Caracter):
             self.attack_next = False
             self.attack_on = True
         return
+
+
+
+        return False
+
+    def move(self, barreiras):
+        # Mudar depois, pq se colidir em duas barreiras do mesmo lado, por exemplo a direita e detectar primeiro a menos aa direita a posisao sera atualizada para a barreiramais a direita, assim atravesando a menos a direita!!!
+
+        # gravidade talvez fique no controle
+
+        self.gravity()
+
+
+        # mover no y
+        self.hit_box.y += self.movement[1]
+        # lista das barreiras que colidio
+
+        collisinons = self.move_collision(barreiras)
+        for barreira in collisinons:
+            if self.movement[1] < 0:
+                self.hit_box.top = barreira.bottom
+                self.movement[1] = 0
+            if self.movement[1] > 0:
+                if True:
+                    left = barreira
+                    right = barreira
+                    done = False
+
+                    while (done == False):
+                        for i in barreiras:
+
+
+                            if i.midright == left.midleft:
+                                left = i
+                                continue
+                        done = True
+
+                    done = False
+                    while (done == False):
+                        for i in barreiras:
+                            if i.midleft == right.midright:
+                                right = i
+                                continue
+                        done = True
+                print(self.limits)
+                self.hit_box.bottom = barreira.top
+                self.movement[1] = 0
+                self.num_jumps = 0
+
+        # mover no x
+        self.hit_box.x += self.movement[0]
+        # lista das barreiras que colidio
+        collisinons = self.move_collision(barreiras)
+        for barreira in collisinons:
+            if self.movement[0] < 0:
+                self.hit_box.left = barreira.right
+            if self.movement[0] > 0:
+                self.hit_box.right = barreira.left
+        self.rect.center = self.hit_box.center
+
+        return
+    def set_limits(self,tiles,tile):
+        left= tile
+        right=tile
+        done=False
+        while (done==False):
+            for i in tiles:
+                if i.rect.midright==left.midleft:
+                    left=i.rect
+                    continue
+            done =True
+
+        done = False
+        while (done == False):
+            for i in tiles:
+                if i.midleft == right.rect.midright:
+                    right = i
+                    continue
+            done = True
+
+
+
+
+        self.limits=(left.rect.left,right.rect.right)
