@@ -86,6 +86,11 @@ class Caracter(enteties.Entetie):
             return True
         return False
 
+
     def attack(self, enemy):
         return
+
+    def set_hit_box(self,rect):
+        self.hit_box=rect
+
 #put animation in here when i learn to refernce the child class

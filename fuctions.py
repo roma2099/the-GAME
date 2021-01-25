@@ -3,11 +3,14 @@ import pickle
 
 import pygame
 
+import skeleton
 import tile
+from goblin import Goblin
 
-def img_load(file_directory, scale):
+
+def img_load(file_directory, scale=1):
     img = pygame.image.load(file_directory).convert_alpha()
-    return pygame.transform.scale(img, (scale * img.get_rect().size[0], scale * img.get_rect().size[1]))
+    return pygame.transform.scale(img, (int(scale * img.get_rect().size[0]), int(scale * img.get_rect().size[1])))
 
 def get_files_from_directory(directory):
     files = os.listdir(directory)
@@ -21,6 +24,10 @@ def get_files_from_directory(directory):
     return files
 def get_map(directory):
     tile.Tile.img.append(img_load(r"sprites/tiles/Tile_1.png", 2))
+    Goblin.frame = make_dic_images(get_files_from_directory("sprites/Enemies/Goblin/individual"),
+                                   ["idle", "run", "death", "attack", "shield", "take"])
+    skeleton.Skeleton.frame = make_dic_images(get_files_from_directory("sprites/Enemies/Skeleton/individual"),
+                                              ["idle", "run", "death", "attack", "shield", "take"])
 
     tile_list = []
     enemies_list = []

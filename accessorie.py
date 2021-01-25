@@ -1,7 +1,7 @@
-import pygame
+import pygame,enteties
 
 
-class Accessorie:
+class Accessorie(enteties.Entetie):
     img = []
 
     def __init__(self, x, y, index=0):

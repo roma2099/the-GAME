@@ -3,8 +3,11 @@ import pickle
 
 from fuctions import *
 from tile import *
-from enemy import *
+from goblin import *
 from accessorie import *
+
+
+
 
 
 def check_object_in_list(object, object_list):
@@ -39,24 +42,35 @@ def add_and_remove(Entety, entety_list, cousor_entety, camera):
 
 def editor():
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((640*2, 380*2))
 
-    background = pygame.Surface(screen.get_size())
-    background.fill((0, 0, 0))
+    background = pygame.Surface((640*2, 380*2))
+    background.fill((27, 27, 27))
+
+
+
 
     clock = pygame.time.Clock()
     keepGoing = True
 
     Tile.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
-    Enemy.frame= make_dic_images(get_files_from_directory("sprites/Enemies"), ["idle"])
+    Goblin.frame= {'idle':[img_load("sprites/Enemies/Goblin/individual/goblin-idle-0.png",1.5)]}
+
     # Accessorie.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
     one_tile = Tile((0, 0), 0)
-    one_enemies = Enemy((0, 0),0)
-#    one_accessories = Accessorie((0, 0), 0)
+    one_enemy = Goblin((0, 0),0)
 
+    # one_accessories = Accessorie((0, 0), 0)
     tile_list = []
     enemies_list = []
     accessories_list = []
+#-----------------------------
+    tipo=[one_tile, one_enemy]
+    tipo_list=[tile_list,enemies_list]
+    tipo_class=[Tile,     Goblin ]
+
+
+
 
     camera = [0, 0]
 
@@ -94,55 +108,37 @@ def editor():
 
                 if event.key == pygame.K_s:
                     with open("maps/map_1.txt", "wb") as map_file:
+                        for list in tipo_list:
+                          for element in list:
+                              element.rect.x *= 2
+                              element.rect.y *= 2
+                              element.rect.height *= 2
+                              element.rect.width *= 2
 
-                        for t in tile_list:
-                            t.rect.x *= 2
-                            t.rect.y *= 2
-                            t.rect.height *= 2
-                            t.rect.width *= 2
 
-                        for e in enemies_list:
-                            e.rect.x *= 2
-                            e.rect.y *= 2
-
-                        for a in accessories_list:
-                            a.rect.x *= 2
-                            a.rect.y *= 2
-
-                        list = [accessories_list, tile_list, enemies_list]
-                        pickle.dump(list, map_file)
+                        tipo_list = [accessories_list, tile_list, enemies_list]
+                        pickle.dump(tipo_list, map_file)
                         keepGoing = False
 
                 if event.key == pygame.K_l:
                     with open("maps/map_1.txt", "rb") as map_file:
 
-                        list = pickle.load(map_file)
-                        accessories_list, tile_list, enemies_list = list[0], list[1], list[2]
-                        for t in tile_list:
-                            t.rect.x *= 0.5
-                            t.rect.y *= 0.5
-                            t.rect.height *= 0.5
-                            t.rect.width *= 0.5
+                        tipo_list = pickle.load(map_file)
 
-                        for e in enemies_list:
-                            e.rect.x *= 0.5
-                            e.rect.y *= 0.5
-
-                        for a in accessories_list:
-                            a.rect.x *= 0.5
-                            a.rect.y *= 0.5
-
-                if event.key == pygame.K_1:
-                    choise = 1
-                if event.key == pygame.K_2:
-                    choise = 2
+                        for list in tipo_list:
+                            for element in list:
+                                element.rect.x *= 0.5
+                                element.rect.y *= 0.5
+                                element.rect.height *= 0.5
+                                element.rect.width *= 0.5
+                if event.key == pygame.K_1 and choise<len(tipo)-1:
+                    choise +=1
+                if event.key == pygame.K_2 and choise>0:
+                    choise -= 1
 
 
             elif event.type == pygame.MOUSEMOTION:
-                if choise == 1:
-                    add_and_remove(Tile, tile_list, one_tile, camera)
-                else:
-                    add_and_remove(Enemy, enemies_list, one_enemies, camera)
+                    add_and_remove(tipo_class[choise], tipo_list[choise], tipo[choise], camera)
 
         if k_up:
             camera[1] += -4
@@ -153,22 +149,17 @@ def editor():
         if k_rigth:
             camera[0] += 4
 
-        screen.blit(background, (0, 0))
+        screen.blit(background,(0,0))
 
-        for i in accessories_list:
-            i.draw(screen, camera)
-
-        for i in tile_list:
-            i.draw(screen, camera)
-            # print(i.rect.x,i.rect.y)
-        for i in enemies_list:
-            i.draw(screen, camera)
+        for list in tipo_list:
+            for element in list:
+                element.draw(screen, camera)
 
 
-        if choise == 1:
-            one_tile.draw(screen, (-camera[0] % 32, -camera[1] % 32))
-        else:
-            one_enemies.draw(screen, (0, 0))
+
+
+
+        tipo[choise].draw(screen, (-camera[0] % 32, -camera[1] % 32))
 
 
         pygame.display.update()

@@ -2,29 +2,134 @@ import pygame, caracter
 
 
 class Enemy(caracter.Caracter):
-    frame = {}
+
 
     def __init__(self, position=(0, 0),index=0):
         super(Enemy, self).__init__(position)
-        self.rect = Enemy.frame[self.frame_on][self.frame_index].get_rect(topleft=position)
-
+        self.rect = pygame.Rect(7, 8, 20 * 3, 27 * 3)
+        self.run_speed= 12
         self.attack_on = False
         self.attack_combo = 1
         self.attack_next = False
-        self.hit_box = pygame.Rect(7, 8, 20 * 3, 27 * 3)
+        self.hit_box=self.rect
         self.num_jumps = 0
         print(self.hit_box)
 
+        self.set_hit_box(self.rect)
+    def ai(self,player,list_tile):
+        up, down, left, right, jump, k1, k2=False,False,False,False,False,False,False
+        if self.rect.centerx-player.rect.centerx <= 400 and self.rect.centerx-player.rect.centerx >= -400 :
+            if self.rect.centerx-player.rect.centerx <= 100 and self.rect.centerx-player.rect.centerx >= -100 :
+                left = False
+                right = False
+                k1=True
+            elif self.rect.centerx-player.rect.centerx>0:
 
-    def draw(self, screen, camera=(0, 0)):
-        screen.blit(pygame.transform.flip(Enemy.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
-        #if self.test_mode:
-         #   screen.blit(pygame.Surface(self.hit_box.size), (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
+                left =True
+                right=False
 
-    def animation(self):
+            elif self.rect.centerx-player.rect.centerx <0:
 
-        self.frame_index += 13*(1/40)
-        if len(Enemy.frame[self.frame_on]) <= self.frame_index:
+                left =False
+                right=True
+            else :
+                left = False
+                right = False
+
+
+
+
+        self.controle(up, down, left, right, jump, k1, k2)
+
+    def controle(self, up, down, left, right, jump, k1, k2):
+        # animation
+        if self.animation():
+            self.attack_on = False
+        if (self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (self.frame_on != "attack"  )):
+            if self.attack_next == True and self.attack_on == False:
+                if right and not left:
+                    self.side_left = False
+                elif not right and left:
+                    self.side_left = True
+            if (self.attack_next == True) and self.attack_on == False:
+                self.attack_next = False
+                self.attack_on = True
+                self.attack_combo += 1
+
+                if self.attack_combo == 3:
+                    self.attack_combo = 1
+            else:
+                self.attack_combo = 1
+                print(1)
+
+            self.frame_on = "attack"
+            print("attack" + str(self.attack_combo))
             self.frame_index = 0
-            return True
-        return False
+
+
+
+        elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False:
+            self.frame_on = "jump"
+            self.frame_index = 0
+
+        elif self.movement[1] > 0 and self.frame_on != "fall" and self.attack_on == False:
+            #Hack- probabli gonna delete this
+            self.frame_on = "idle"
+            self.frame_index = 0
+
+        elif (left or right) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0 :
+            self.frame_on = "run"
+            self.frame_index = 0
+
+        elif self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False:
+            self.frame_on = "idle"
+            self.frame_index = 0
+
+
+        #       if self.attack_next == 1 :
+        #          if self.attack_on==1 :
+        #             self.attack_end = 0
+        #            self.attack_on=0
+        #           self.img_on = "attack"+str(self.attack_combo)
+        #          self.attack_combo=+1
+        #         if self.attack_combo>3:
+        #            self.attack_combo=1
+
+        # if u take the "and down ==False something happends"
+        if jump and self.num_jumps < 2 and down == False:
+            self.movement[1] = -15
+            self.num_jumps += 1
+        #if down and self.movement[1] == 0 and self.num_jumps == 0 and self.hit_box.height ==27 * 3:
+        #    self.hit_box.height = self.hit_box.height / 2
+        #    self.hit_box.y += self.rect.height / 2
+        #elif not down and self.hit_box.height !=27 * 3:
+        #    self.hit_box.y-=self.hit_box.height
+        #    self.hit_box.height =27 * 3
+
+        # Side movement
+        if right and left:
+            if self.movement[0] != 0:
+                self.movement[0] = int(self.movement[0] * 0.7)
+        elif right and left == False and self.attack_on == False :
+            self.side_left = False
+            self.movement[0] += 3
+            if self.movement[0] >= self.run_speed:
+                self.movement[0] = self.run_speed
+        elif right == False and left and self.attack_on == False:
+            self.side_left = True
+            self.movement[0] -= 3
+            if self.movement[0] <= -self.run_speed:
+                self.movement[0] = -self.run_speed
+
+        else:
+            if self.movement!=0:
+                self.movement[0] = int (self.movement[0]*0.7)
+        # attack
+
+        if k1:
+            self.attack_next = True
+
+        if self.attack_next == True and self.attack_on == False:
+            self.attack_next = False
+            self.attack_on = True
+        return

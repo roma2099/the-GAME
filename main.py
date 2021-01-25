@@ -3,12 +3,21 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-import pygame, player, sys, os, tile, enemy, accessorie, pickle
+import pygame, player, sys, os, tile, enemy, accessorie, pickle, skeleton,mushroom
 from fuctions import *
+from goblin import *
 
 
 
+def fix_enemy(enteties_list,entetie_class=None):
+    new_list=[]
+    x=100
+    for entety in enteties_list:
+        print(entety.rect.center)
+        new_list.append(entetie_class(entety.rect.center))
+        x+=100
 
+    return new_list
 def draw_backgound(screen, images, camera):
     bg_move = 0
     num = 1
@@ -47,18 +56,21 @@ for i in get_files_from_directory("sprites/background"):
 
 
 player.Player.frame= make_dic_images(get_files_from_directory("sprites/player/Hero Knight/individual"),["run", "fall", "die", "hurt", "idle", "crouch", "jump", "attack1", "attack2","attack3"])
-enemy.Enemy.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Goblin/individual"), ["idle","run","death","attack","shield","take"])
-mc = player.Player( (100, 100))
+Goblin.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Goblin/individual"), ["idle","run","death","attack","shield","take"])
+skeleton.Skeleton.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Skeleton/individual"), ["idle","run","death","attack","shield","take"])
+mushroom.Mushroom.frame = make_dic_images (get_files_from_directory("sprites/Enemies/Mushroom/individual"), ["idle","run","death","attack","shield","take"])
 
-# HACK
+mc = player.Player( (100, 100))
+mc.test_mode= True
+mc.hit_box.height=40 * 3
+# HACK40«
 
 
 accessories_list, barriers, enemies_list = get_map("sprites/tiles")
-for x in enemies_list:
-    x.hit_box=x.rect
-    x.test_mode=True
 
-print(enemies_list)
+enemies_list=fix_enemy(enemies_list,mushroom.Mushroom)
+
+
 camera = [0, 0]
 
 clock = pygame.time.Clock()
@@ -75,8 +87,23 @@ k_r = False
 BIRDFLAP = pygame.USEREVENT + 1
 pygame.time.set_timer(BIRDFLAP, 80)
 
-e=enemy.Enemy((200 ,200))
-e.hp,e.hp_max=5000,5000
+
+goblin_1=Goblin((200 ,200))
+goblin_1.hp,goblin_1.hp_max=5000,5000
+goblin_1.set_test_mode()
+
+
+skeleton_1=skeleton.Skeleton((800, 200))
+skeleton_1.hp,skeleton_1.hp_max=5000,5000
+
+
+
+
+
+
+
+
+
 
 # GAME LOOP-------------------------------------------------------------------------------
 
@@ -141,19 +168,23 @@ while True:
 
 
     draw_backgound(screen, bg, camera)
-    e.draw(screen, camera)
-    e.move(barriers)
-    e.animation()
 
-    if mc.attack(e, screen, camera):
-        e.hp -= 1
-        print(e.hp)
+
+    #if mc.attack(e, screen, camera):
+     #   e.hp -= 1
+      #  print(e.hp)
     for barreira in barriers:
         barreira.draw(screen, camera)
-    for r in enemies_list:
 
-        r.draw(screen, camera)
-        r.move(barriers)
+    for enemy in enemies_list:
+        enemy.draw(screen, camera)
+        enemy.move(barriers)
+        enemy.ai(mc,barriers)
+    #for r in enemies_list:
+
+
+   #     r.draw(screen, camera)
+    #    r.move(barriers)
 
         #      if k_x :
         #         for enemy in enemys:

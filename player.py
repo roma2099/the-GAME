@@ -11,7 +11,8 @@ class Player(caracter.Caracter):
         self.attack_on = False
         self.attack_combo = 1
         self.attack_next = False
-        self.hit_box = pygame.Rect(7, 8, 20 * 3, 27 * 3)
+        self.hit_box = pygame.Rect(7, 8, 21 * 3, 27 * 3)
+
         self.num_jumps = 0
 
 
@@ -47,9 +48,9 @@ class Player(caracter.Caracter):
             print("attack" + str(self.attack_combo))
             self.frame_index = 0
 
-        elif self.hit_box.height !=27 * 3 and self.frame_on != "crouch":
-            self.frame_on = "crouch"
-            self.frame_index = 0
+        #elif self.hit_box.height !=27 * 3 and self.frame_on != "crouch":
+        #    self.frame_on = "crouch"
+        #    self.frame_index = 0
 
         elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False:
             self.frame_on = "jump"
@@ -59,11 +60,11 @@ class Player(caracter.Caracter):
             self.frame_on = "fall"
             self.frame_index = 0
 
-        elif (left or right) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0 and self.hit_box.height ==27 * 3:
+        elif (left or right) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0 :#and self.hit_box.height ==27 * 3:
             self.frame_on = "run"
             self.frame_index = 0
 
-        elif self.hit_box.height ==27 * 3 and self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False:
+        elif  self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False:#and self.hit_box.height ==27 * 3
             self.frame_on = "idle"
             self.frame_index = 0
 
@@ -81,24 +82,31 @@ class Player(caracter.Caracter):
         if jump and self.num_jumps < 2 and down == False:
             self.movement[1] = -15
             self.num_jumps += 1
-        if down and self.movement[1] == 0 and self.num_jumps == 0 and self.hit_box.height ==27 * 3:
-            self.hit_box.height = self.hit_box.height / 2
-            self.hit_box.y += self.rect.height / 2
-        elif not down and self.hit_box.height !=27 * 3:
-            self.hit_box.y-=self.hit_box.height
-            self.hit_box.height =27 * 3
+       # if down and self.movement[1] == 0 and self.num_jumps == 0 and self.hit_box.height ==27 * 3:
+       #     self.hit_box.height = self.hit_box.height / 2
+       #     self.hit_box.y += self.rect.height / 2
+       # elif not down and self.hit_box.height !=27 * 3:
+       #     self.hit_box.y-=self.hit_box.height
+       #     self.hit_box.height =27 * 3
 
         # Side movement
         if right and left:
-            self.movement[0] = 0
-        elif right and left == False and self.attack_on == False and self.hit_box.height ==27 * 3:
+            if self.movement[0] != 0:
+                self.movement[0] = int(self.movement[0] * 0.7)
+        elif right and left == False and self.attack_on == False and self.frame_on!="die":# and self.hit_box.height ==27 * 3:
             self.side_left = False
-            self.movement[0] = self.run_speed
-        elif right == False and left and self.attack_on == False and self.hit_box.height ==27 * 3:
+            self.movement[0] += 3
+            if self.movement[0] >= self.run_speed:
+                self.movement[0] = self.run_speed
+        elif right == False and left and self.attack_on == False:# and self.hit_box.height ==27 * 3:
             self.side_left = True
-            self.movement[0] = -self.run_speed
+            self.movement[0] -= 3
+            if self.movement[0] <= -self.run_speed:
+                self.movement[0] = -self.run_speed
+
         else:
-            self.movement[0] = 0
+            if self.movement!=0:
+                self.movement[0] = int (self.movement[0]*0.7)
         # attack
 
         if k1:
@@ -116,21 +124,31 @@ class Player(caracter.Caracter):
                 attack_range.midright = self.hit_box.midleft
             else:
                 attack_range.midleft = self.hit_box.midright
-            pygame.draw.rect(screen,(255,50,30),(attack_range.x-camera[0],attack_range.y-camera[1],attack_range.width,attack_range.height))
-        # I need to know in what side they got hit on
+  # I need to know in what side they got hit on
 
             return attack_range.colliderect(character.hit_box)
 
     def draw(self, screen, camera=(0, 0)):
-        screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
+        screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]-15))
 
         if self.test_mode:
+            rect=pygame.Surface(self.hit_box.size).convert_alpha()
+            rect.fill((200,0,0,100))
+            screen.blit(rect, (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
+            if self.attack_on:
+                attack_range = pygame.Rect(10, 10, 100, 100)
+                attack_range_surface = pygame.Surface(attack_range.size).convert_alpha()
+                attack_range_surface.fill((250, 150, 71, 100))
+                if self.side_left:
+                    attack_range.midright = self.hit_box.midleft
+                else:
+                    attack_range.midleft = self.hit_box.midright
 
-            screen.blit(pygame.Surface(self.hit_box.size), (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
+                screen.blit(attack_range_surface,(attack_range.x - camera[0], attack_range.y - camera[1]))
     def animation(self):
 
         self.frame_index += 13*(1/40)
-        if len(Player.frame[self.frame_on]) <= self.frame_index:
+        if len(Player.frame[self.frame_on])<= int(self.frame_index):
             self.frame_index = 0
             return True
         return False
