@@ -3,6 +3,7 @@ import pygame, caracter
 
 class Player(caracter.Caracter):
     frame={}
+    sound = {}
     def __init__(self, position=(0, 0)):
 
         # maybe u can make the rect_attack evry time o attack
@@ -12,6 +13,7 @@ class Player(caracter.Caracter):
         self.attack_combo = 1
         self.attack_next = False
         self.hit_box = pygame.Rect(7, 8, 21 * 3, 27 * 3)
+        self.reload=0
 
         self.num_jumps = 0
 
@@ -27,7 +29,7 @@ class Player(caracter.Caracter):
         if self.animation():
             self.attack_on = False
         if (self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (
-                self.frame_on != "attack1" and self.frame_on != "attack2" )):
+                self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3")):
             if self.attack_next == True and self.attack_on == False:
                 if right and not left:
                     self.side_left = False
@@ -38,7 +40,7 @@ class Player(caracter.Caracter):
                 self.attack_on = True
                 self.attack_combo += 1
 
-                if self.attack_combo == 3:
+                if self.attack_combo == 4:
                     self.attack_combo = 1
             else:
                 self.attack_combo = 1
@@ -46,8 +48,13 @@ class Player(caracter.Caracter):
 
             self.frame_on = "attack" + str(self.attack_combo)
             print("attack" + str(self.attack_combo))
+            Player.sound[self.frame_on].play()
             self.frame_index = 0
+#---------------------------------------------------------------------------------------------
 
+            self.reload = 12
+
+#---------------------------------------------------------------------------------------------
         #elif self.hit_box.height !=27 * 3 and self.frame_on != "crouch":
         #    self.frame_on = "crouch"
         #    self.frame_index = 0
@@ -63,6 +70,7 @@ class Player(caracter.Caracter):
         elif (left or right) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0 :#and self.hit_box.height ==27 * 3:
             self.frame_on = "run"
             self.frame_index = 0
+            Player.sound[self.frame_on].play()
 
         elif  self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False:#and self.hit_box.height ==27 * 3
             self.frame_on = "idle"
@@ -112,21 +120,27 @@ class Player(caracter.Caracter):
         if k1:
             self.attack_next = True
 
+
         if self.attack_next == True and self.attack_on == False:
+
             self.attack_next = False
             self.attack_on = True
         return
 
     def attack(self, character,screen=None,camera=[0,0]):
-        if self.attack_on:
-            attack_range = pygame.Rect(10, 10, 100, 100)
-            if self.side_left:
-                attack_range.midright = self.hit_box.midleft
-            else:
-                attack_range.midleft = self.hit_box.midright
+        if self.attack_on :
+
+            self.reload-=1
+            if self.reload==0:
+
+                attack_range = pygame.Rect(10, 10, 100, 100)
+                if self.side_left:
+                    attack_range.midright = self.hit_box.midleft
+                else:
+                    attack_range.midleft = self.hit_box.midright
   # I need to know in what side they got hit on
 
-            return attack_range.colliderect(character.hit_box)
+                return attack_range.colliderect(character.hit_box)
 
     def draw(self, screen, camera=(0, 0)):
         screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]-15))
@@ -135,7 +149,7 @@ class Player(caracter.Caracter):
             rect=pygame.Surface(self.hit_box.size).convert_alpha()
             rect.fill((200,0,0,100))
             screen.blit(rect, (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
-            if self.attack_on:
+            if self.attack_on and self.reload==0:
                 attack_range = pygame.Rect(10, 10, 100, 100)
                 attack_range_surface = pygame.Surface(attack_range.size).convert_alpha()
                 attack_range_surface.fill((250, 150, 71, 100))

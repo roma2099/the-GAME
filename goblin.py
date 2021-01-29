@@ -2,6 +2,7 @@ import  pygame,enemy
 
 class Goblin(enemy.Enemy):
     frame ={}
+    sound={}
     def __init__(self,position=(0,0),index=0):
         super(Goblin, self).__init__(position)
         self.rect = Goblin.frame[self.frame_on][self.frame_index].get_rect(topleft=position)

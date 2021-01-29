@@ -32,8 +32,12 @@ for file in files:
         print(type)
         for i in range(0,int(width/height)):
             im1 = im.crop((height*i, 0, height*(i+1), height))
-            print(r""+type.lower()+"-" + name + "-" + str(i) + ".png")
-            im1.save(type.lower()+"-" + name + "-" +str(i)+".png")
+            if i >9:
+                print(r""+type.lower()+"-" + name + "-" + str(i) + ".png")
+                im1.save(type.lower()+"-" + name + "-" +str(i)+".png")
+            else:
+                print(r"" + type.lower() + "-" + name + "-0" + str(i) + ".png")
+                im1.save(type.lower() + "-" + name + "-0" + str(i) + ".png")
 
 
 # Shows the image in image viewe

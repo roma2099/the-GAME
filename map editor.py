@@ -9,7 +9,6 @@ from accessorie import *
 
 
 
-
 def check_object_in_list(object, object_list):
     for i in object_list:
         if object.rect.topleft == i.rect.topleft:
@@ -114,6 +113,7 @@ def editor():
                               element.rect.y *= 2
                               element.rect.height *= 2
                               element.rect.width *= 2
+
 
 
                         tipo_list = [accessories_list, tile_list, enemies_list]

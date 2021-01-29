@@ -24,10 +24,7 @@ def get_files_from_directory(directory):
     return files
 def get_map(directory):
     tile.Tile.img.append(img_load(r"sprites/tiles/Tile_1.png", 2))
-    Goblin.frame = make_dic_images(get_files_from_directory("sprites/Enemies/Goblin/individual"),
-                                   ["idle", "run", "death", "attack", "shield", "take"])
-    skeleton.Skeleton.frame = make_dic_images(get_files_from_directory("sprites/Enemies/Skeleton/individual"),
-                                              ["idle", "run", "death", "attack", "shield", "take"])
+
 
     tile_list = []
     enemies_list = []

@@ -2,6 +2,7 @@ import enemy,pygame
 
 class Skeleton(enemy.Enemy):
     frame={}
+    sound={}
     def __init__(self,position=(0,0)):
         super(Skeleton, self).__init__(position)
         self.rect = Skeleton.frame[self.frame_on][self.frame_index].get_rect(topleft=position)

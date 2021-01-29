@@ -15,12 +15,12 @@ class Enemy(caracter.Caracter):
         self.hit_box=self.rect
         self.num_jumps = 0
         print(self.hit_box)
-        self.limits=(100,400)
+        self.limits=(position[0]-200,position[0]+200)
 
         self.set_hit_box(self.rect)
     def ai(self,player,list_tile):
         up, down, left, right, jump, k1, k2=False,False,False,False,False,False,False
-        if self.rect.centerx-player.rect.centerx <= 210 and self.rect.centerx-player.rect.centerx >= -210 :
+        if self.rect.centerx-player.rect.centerx <= 260 and self.rect.centerx-player.rect.centerx >= -260 and self.rect.centery-player.rect.centery <= 60 and self.rect.centery-player.rect.centery >= -60:
             if self.rect.centerx-player.rect.centerx <= 90 and self.rect.centerx-player.rect.centerx >= -90 :
                 left = False
                 right = False
@@ -171,28 +171,9 @@ class Enemy(caracter.Caracter):
                 self.hit_box.top = barreira.bottom
                 self.movement[1] = 0
             if self.movement[1] > 0:
-                if True:
-                    left = barreira
-                    right = barreira
-                    done = False
-
-                    while (done == False):
-                        for i in barreiras:
 
 
-                            if i.midright == left.midleft:
-                                left = i
-                                continue
-                        done = True
 
-                    done = False
-                    while (done == False):
-                        for i in barreiras:
-                            if i.midleft == right.midright:
-                                right = i
-                                continue
-                        done = True
-                print(self.limits)
                 self.hit_box.bottom = barreira.top
                 self.movement[1] = 0
                 self.num_jumps = 0
@@ -210,25 +191,38 @@ class Enemy(caracter.Caracter):
 
         return
     def set_limits(self,tiles,tile):
-        left= tile
-        right=tile
-        done=False
-        while (done==False):
-            for i in tiles:
-                if i.rect.midright==left.midleft:
-                    left=i.rect
+        if True:
+            left = tile
+            right = tile
+            done = False
+
+            while (True):
+                for i in tiles:
+                    print("tile i :", i.rect.midleft[0], "\ntile left" ,left.midleft[0])
+                    if i.rect.midleft[0]-64 == left.midleft[0]:
+                        left = i
+                        done=True
+                        break
+                if done :
                     continue
-            done =True
+                else:
+                    break
 
-        done = False
-        while (done == False):
-            for i in tiles:
-                if i.midleft == right.rect.midright:
-                    right = i
+            done = False
+
+            while (True):
+                for i in tiles:
+
+                    if i.midleft[0]+64 == right.midleft[0]:
+                        left = i
+                        done = True
+                        break
+                if done:
                     continue
-            done = True
+                else:
+                    break
 
 
 
 
-        self.limits=(left.rect.left,right.rect.right)
+        self.limits=(left.midleft[0],right.midright[0])
