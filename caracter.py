@@ -93,4 +93,16 @@ class Caracter(enteties.Entetie):
     def set_hit_box(self,rect):
         self.hit_box=rect
 
+    def damage(self,damage_points):
+        self.hp-=damage_points
+        if self.hp<0:
+            self.hp=0
+
+    def push(self,character):
+        if character!=self:
+            if self.hit_box.colliderect(character.hit_box):
+                self.movement[0]-=int(self.movement[0]*0.4)
+
+
+
 #put animation in here when i learn to refernce the child class

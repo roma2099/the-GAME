@@ -1,6 +1,6 @@
 import pygame
 import pickle
-
+import skeleton,mushroom
 from fuctions import *
 from tile import *
 from goblin import *
@@ -16,7 +16,7 @@ def check_object_in_list(object, object_list):
 
 
 def add_and_remove(Entety, entety_list, cousor_entety, camera):
-    cousor_entety.rect.bottomright = (int(pygame.mouse.get_pos()[0] / 32) * 32,
+    cousor_entety.rect.center = (int(pygame.mouse.get_pos()[0] / 32) * 32,
                                       int(pygame.mouse.get_pos()[1] / 32) * 32)
 
     if pygame.mouse.get_pressed() == (1, 0, 0):
@@ -54,19 +54,25 @@ def editor():
 
     Tile.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
     Goblin.frame= {'idle':[img_load("sprites/Enemies/Goblin/individual/goblin-idle-0.png",1.5)]}
+    skeleton.Skeleton.frame = {'idle': [img_load("sprites/Enemies/Skeleton/individual/skeleton-idle-0.png", 1.5)]}
+    mushroom.Mushroom.frame = {'idle': [img_load("sprites/Enemies/Mushroom/individual/mushroom-idle-00.png", 1.5)]}
 
     # Accessorie.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
     one_tile = Tile((0, 0), 0)
-    one_enemy = Goblin((0, 0),0)
+    one_goblin = Goblin((0, 0),0)
+    one_mushroom=mushroom.Mushroom((0,0),0)
+    one_skeleton = skeleton.Skeleton((0, 0), 0)
 
     # one_accessories = Accessorie((0, 0), 0)
     tile_list = []
-    enemies_list = []
+    goblin_list = []
+    skeleton_list = []
+    mushroom_list =[]
     accessories_list = []
 #-----------------------------
-    tipo=[one_tile, one_enemy]
-    tipo_list=[tile_list,enemies_list]
-    tipo_class=[Tile,     Goblin ]
+    tipo=[one_tile, one_goblin,one_mushroom,one_skeleton]
+    tipo_list=[tile_list,goblin_list,mushroom_list,skeleton_list]
+    tipo_class=[Tile,     Goblin ,mushroom.Mushroom,skeleton.Skeleton]
 
 
 
@@ -116,7 +122,7 @@ def editor():
 
 
 
-                        tipo_list = [accessories_list, tile_list, enemies_list]
+                        tipo_list=[tile_list,goblin_list,mushroom_list,skeleton_list]
                         pickle.dump(tipo_list, map_file)
                         keepGoing = False
 

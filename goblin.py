@@ -9,6 +9,12 @@ class Goblin(enemy.Enemy):
         self.hit_box=pygame.Rect(position[0],position[1],28*3,36*3)
 
         self.hit_box.center=self.rect.center
+        self.reload = 0
+        self.reload_max=20
+        self.hp = 200
+        self.hp_max = 5000
+        self.test_mode=False
+
 
     def draw(self, screen, camera=(0, 0)):
 

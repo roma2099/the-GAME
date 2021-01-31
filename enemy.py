@@ -16,6 +16,9 @@ class Enemy(caracter.Caracter):
         self.num_jumps = 0
         print(self.hit_box)
         self.limits=(position[0]-200,position[0]+200)
+        self.reload=0
+        self.reload_max=35
+
 
         self.set_hit_box(self.rect)
     def ai(self,player,list_tile):
@@ -63,6 +66,7 @@ class Enemy(caracter.Caracter):
         if (self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (self.frame_on != "attack"  )):
             if self.attack_next == True and self.attack_on == False:
                 if right and not left:
+
                     self.side_left = False
                 elif not right and left:
                     self.side_left = True
@@ -76,11 +80,14 @@ class Enemy(caracter.Caracter):
             else:
                 self.attack_combo = 1
                 print(1)
-
+            self.play_sound()
             self.frame_on = "attack"
             print("attack" + str(self.attack_combo))
             self.frame_index = 0
 
+    #-----------------------------------------------------------
+            self.reload=self.reload_max
+    #----------------------------------------------------------.
 
 
         elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False:
@@ -226,3 +233,21 @@ class Enemy(caracter.Caracter):
 
 
         self.limits=(left.midleft[0],right.midright[0])
+
+    def attack(self, character,screen=None,camera=[0,0]):
+        if self.attack_on :
+
+            self.reload-=1
+            if self.reload==0:
+
+                attack_range = pygame.Rect(10, 10, 100, 100)
+                if self.side_left:
+                    attack_range.midright = self.hit_box.midleft
+                else:
+                    attack_range.midleft = self.hit_box.midright
+  # I need to know in what side they got hit on
+
+                return attack_range.colliderect(character.hit_box)
+
+    def play_sound(self):
+        pass
