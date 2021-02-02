@@ -119,6 +119,7 @@ def editor():
                               element.rect.y *= 2
                               element.rect.height *= 2
                               element.rect.width *= 2
+                              print (element.rect.center)
 
 
 
@@ -137,6 +138,7 @@ def editor():
                                 element.rect.y *= 0.5
                                 element.rect.height *= 0.5
                                 element.rect.width *= 0.5
+                                print(element.rect.center)
                 if event.key == pygame.K_1 and choise<len(tipo)-1:
                     choise +=1
                 if event.key == pygame.K_2 and choise>0:
@@ -159,7 +161,10 @@ def editor():
 
         for list in tipo_list:
             for element in list:
+                if type (element) is not Tile:
+                    element.hit_box.center=element.rect.center
                 element.draw(screen, camera)
+
 
 
 

@@ -19,7 +19,7 @@ class Player(caracter.Caracter):
 
         self.num_jumps = 0
         self.death=False
-        self.test_mode=True
+        self.test_mode=False    
 
 
         # \ self.rect.width -= 13
@@ -29,11 +29,11 @@ class Player(caracter.Caracter):
     # This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
     def controle(self, up, down, left, right, jump, k1, k2):
+
         # animation
         if self.animation():
             self.attack_on = False
-            if self.frame_on != "death":
-                self.death=True
+
 
 
         if self.hp==0 and self.frame_on != "death":

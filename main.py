@@ -21,8 +21,9 @@ def draw_text(text, font, color, surface, x, y):
 
 
 def main_menu():
-    volume=1
+    font = pygame.font.SysFont("fixedsys", 60)
     click = False
+    volume=1
     music = pygame.mixer.music.load(
         "sounds/sound track/preview.mp3")
     pygame.mixer.music.play(-1)
@@ -52,6 +53,9 @@ def main_menu():
                 pygame.mixer.fadeout(1000)
                 clock.tick(1)
                 level_1(volume)
+                music = pygame.mixer.music.load(
+                    "sounds/sound track/preview.mp3")
+                pygame.mixer.music.play(-1)
         else:
             cor1 = (129, 200, 55)
 
@@ -90,6 +94,7 @@ def main_menu():
         clock.tick(60)
 
 def options(volume):
+    font = pygame.font.SysFont("fixedsys", 60)
 
     click = False
 
@@ -185,7 +190,33 @@ def options(volume):
 
 def level_1(volume):
     global goblin_list,skeletom_list,mushroom_list
+    mc = player.Player((100, 100))
 
+    mc.hit_box.height = 40 * 3
+
+    # HACK40«
+
+    list = get_map("sprites/tiles")
+    barriers = list[0]
+    goblin_list = fix_enemy(list[1], Goblin)  # Goblins
+    mushroom_list = fix_enemy(list[1], mushroom.Mushroom)
+    skeletom_list = fix_enemy(list[1], skeleton.Skeleton)
+
+    # enemies_list =[mushroom.Mushroom(enemies_list[0].rect.center)]
+
+    camera = [0, 0]
+
+    BIRDFLAP = pygame.USEREVENT + 1
+    pygame.time.set_timer(BIRDFLAP, 80)
+
+    goblin_1 = Goblin((200, 200))
+    goblin_1.hp, goblin_1.hp_max = 5000, 5000
+
+    skeleton_1 = skeleton.Skeleton((800, 200))
+    skeleton_1.hp, skeleton_1.hp_max = 5000, 5000
+
+    mushroom_1 = mushroom.Mushroom((1000, 200))
+    particles_list = []
 
     k_left = False
     k_right = False
@@ -198,7 +229,10 @@ def level_1(volume):
     music = pygame.mixer.music.load("sounds/sound track/Yoann Laulan - Dead Cells - Soundtrack Part 1 - 32 Arboretum.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(volume)
+    mushroom_list.append(mushroom_1)
     while True:
+        if mc.frame_on=="death"and mc.frame_index >=9:
+            return
         k_space = False
         k_x = False
 
@@ -265,21 +299,12 @@ def level_1(volume):
                 particles_list.remove(particle)
             particle.draw(screen, camera)
         #------------------------------------
-        if mc.attack(goblin_1):
-            print("roma3")
-            enemy.damage(50)
 
-        if mc.attack(skeletom_list[0].hit_box):
-            print("roma2")
-            enemy.damage(50)
-
-        if mc.attack(mushroom_list[0].hit_box):
-            print("roma1")
-            enemy.damage(50)
 
 
         #------------------------------------
-        for enemy_list in [goblin_list,skeletom_list,mushroom_list]:
+        list_list=[goblin_list,skeletom_list,mushroom_list]
+        for enemy_list in list_list:
             for enemy in enemy_list:
 
                 mc.push(enemy)
@@ -289,7 +314,7 @@ def level_1(volume):
                     print(mc.hp)
 
                 if mc.attack(enemy.hit_box):
-                    print("roma")
+
                     enemy.damage(50)
                     print(enemy.hp)
 
@@ -299,11 +324,11 @@ def level_1(volume):
                 enemy.ai(mc, barriers)
 
                 if enemy.hp <= 0:
-                    particles_list.append(Particle(enemy.rect.center, 8, (153, 0, 0), 90, 90))
+                    particles_list.append(Particle(enemy.rect.center, 16, (153, 10, 0), 90, 90))
                     particles_list.append(
-                        Particle((enemy.rect.center[0], enemy.rect.center[1] - 45), 8, (153, 0, 0), 90, 90))
+                        Particle((enemy.rect.center[0], enemy.rect.center[1] - 45), 16, (153, 0, 10), 90, 90))
                     particles_list.append(
-                        Particle((enemy.rect.center[0], enemy.rect.center[1] + 45), 8, (153, 0, 0), 90, 90))
+                        Particle((enemy.rect.center[0], enemy.rect.center[1] + 45), 16, (153, 4, 18), 90, 90))
                     enemy_list.remove(enemy)
         # for r in enemies_list:
 
@@ -357,51 +382,17 @@ player.Player.sound={"attack1":pygame.mixer.Sound("sounds/sound efect/player/esp
 #skeleton.Skeleton.sound={"run":pygame.mixer.Sound("sounds/sound efect/Skeleton/andar.mp3"), "attack":pygame.mixer.Sound("sounds/sound efect/Skeleton/ataque.mp3"),"hurt":pygame.mixer.Sound("sounds/sound efect/Skeleton/hit.mp3")}
 mushroom.Mushroom.sound={"run":pygame.mixer.Sound("sounds/sound efect/Mushroom/run.mp3"), "attack":pygame.mixer.Sound("sounds/sound efect/Mushroom/ataque.mp3"), "hurt":pygame.mixer.Sound("sounds/sound efect/Mushroom/hit.mp3")}
 
-mc = player.Player( (100, 100))
-mc.test_mode= True
-mc.hit_box.height=40 * 3
-# HACK40«
 
-
-list = get_map("sprites/tiles")
-barriers=list[0]
-goblin_list=fix_enemy(list[1], Goblin) #      Goblins
-mushroom_list=fix_enemy(list[1], mushroom.Mushroom)
-skeletom_list=fix_enemy(list[1], skeleton.Skeleton)
-
-#enemies_list =[mushroom.Mushroom(enemies_list[0].rect.center)]
-
-camera = [0, 0]
 
 clock = pygame.time.Clock()
 
-
-
-BIRDFLAP = pygame.USEREVENT + 1
-pygame.time.set_timer(BIRDFLAP, 80)
-
-
-goblin_1=Goblin((200 ,200))
-goblin_1.hp,goblin_1.hp_max=5000,5000
-
-
-
-skeleton_1=skeleton.Skeleton((800, 200))
-skeleton_1.hp,skeleton_1.hp_max=5000,5000
-
-mushroom_1=mushroom.Mushroom((1000, 200))
-particles_list=[]
 pygame.mixer.pre_init(44100,-16,2,512)
 
 
 
-goblin_list=[goblin_1] #      Goblins
-mushroom_list=[mushroom_1]
-skeletom_list=[skeleton_1]
 
 
-font = pygame.font.SysFont("fixedsys", 60)
-click=False
+
 main_menu()
 
 # GAME LOOP-------------------------------------------------------------------------------
