@@ -3,7 +3,7 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-import pygame, player, sys, os, tile, enemy, accessorie, pickle, skeleton,mushroom
+import pygame, player, sys, os, tile, enemy, accessorie, pickle, skeleton,mushroom,boss
 from particle import *
 from fuctions import *
 from goblin import *
@@ -21,7 +21,7 @@ def draw_text(text, font, color, surface, x, y):
 
 
 def main_menu():
-    font = pygame.font.SysFont("fixedsys", 60)
+    font = pygame.font.SysFont("fixedsys", 69)
     click = False
     volume=1
     music = pygame.mixer.music.load(
@@ -192,7 +192,7 @@ def level_1(volume):
     global goblin_list,skeletom_list,mushroom_list
     mc = player.Player((100, 100))
 
-    mc.hit_box.height = 40 * 3
+
 
     # HACK40«
 
@@ -218,14 +218,20 @@ def level_1(volume):
     mushroom_1 = mushroom.Mushroom((1000, 200))
     particles_list = []
 
+    wizard=boss.Boss((1000, 200))
+    w_list=[wizard]
+
     k_left = False
     k_right = False
     k_space = False
     k_down = False
     k_up = False
-    k_x = False
-    k_y = False
+    k_j = False
+    k_k = False
+    k_l = False
+
     k_r = False
+
     music = pygame.mixer.music.load("sounds/sound track/Yoann Laulan - Dead Cells - Soundtrack Part 1 - 32 Arboretum.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(volume)
@@ -234,7 +240,9 @@ def level_1(volume):
         if mc.frame_on=="death"and mc.frame_index >=9:
             return
         k_space = False
-        k_x = False
+        k_j = False
+        k_l=False
+
 
         # EVENTS------------------------------------------------------------------------------------
 
@@ -246,20 +254,22 @@ def level_1(volume):
             #    mc.animation()
             # I whant to now when the animation , so i need to animated inside the controle
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_s:
                     k_down = True
 
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_w:
                     k_up = True
 
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_d:
                     k_right = True
 
-                elif event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_a:
                     k_left = True
 
-                if event.key == pygame.K_x:
-                    k_x = True
+                if event.key == pygame.K_k:
+                    k_k = True
+                if event.key == pygame.K_j:
+                    k_j = True
 
                 if event.key == pygame.K_r:
                     mc.hit_box.center = (0, 0)
@@ -268,17 +278,22 @@ def level_1(volume):
 
                 if event.key == pygame.K_SPACE:
                     k_space = True
+                if event.key==pygame.K_l:
+
+                    k_l=True
 
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_w:
                     k_up = False
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_s:
                     k_down = False
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_d:
                     k_right = False
                     # maybe it should be just if
-                elif event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_a:
                     k_left = False
+                if event.key == pygame.K_k:
+                    k_k = False
 
         # CAMERA ----------------------------------------------------------------------------------------------
         camera[0] += (mc.rect.centerx - camera[0] - screen.get_height()) / 7
@@ -286,7 +301,7 @@ def level_1(volume):
 
         # ------------------------------------------------------------------------------------------------------
 
-        mc.controle(k_up, k_down, k_left, k_right, k_space, k_x, False)
+        mc.controle(k_up, k_down, k_left, k_right, k_space, k_j, k_k,k_l)
 
         mc.move(barriers)
 
@@ -303,7 +318,7 @@ def level_1(volume):
 
 
         #------------------------------------
-        list_list=[goblin_list,skeletom_list,mushroom_list]
+        list_list=[w_list]
         for enemy_list in list_list:
             for enemy in enemy_list:
 
@@ -372,11 +387,11 @@ for i in get_files_from_directory("sprites/background"):
     ##bg.fill((100, 200, 150))
 
 
-player.Player.frame= make_dic_images(get_files_from_directory("sprites/player/Hero Knight/individual"),["run", "fall", "death", "hurt", "idle", "crouch", "jump", "attack1", "attack2","attack3"])
+player.Player.frame= make_dic_images(get_files_from_directory("sprites/player/Hero Knight/individual"),["run", "fall", "death", "hurt", "idle", "crouch", "jump", "attack1", "attack2","attack3","block idli","roll"])
 Goblin.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Goblin/individual"), ["idle","run","death","attack","shield","take"])
 skeleton.Skeleton.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Skeleton/individual"), ["idle","run","death","attack","shield","take"])
 mushroom.Mushroom.frame = make_dic_images (get_files_from_directory("sprites/Enemies/Mushroom/individual"), ["idle","run","death","attack","shield","take"])
-
+boss.Boss.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Boss 2/individual"), ["idle","run","death","attack","shield","take"])
 player.Player.sound={"attack1":pygame.mixer.Sound("sounds/sound efect/player/espada 1.mp3"),"attack2":pygame.mixer.Sound("sounds/sound efect/player/espada 2.mp3"),"attack3":pygame.mixer.Sound("sounds/sound efect/player/espada 3.mp3"),"run":pygame.mixer.Sound("sounds/sound efect/player/run1.mp3"),"jump":pygame.mixer.Sound("sounds/sound efect/player/Jump sound effect.mp3")}
 #Goblin.sound={"run":pygame.mixer.Sound("sounds/sound efect/goblin/run.mp3"), "attack":pygame.mixer.Sound("sounds/sound efect/goblin/ataque.mp3"), "hurt":pygame.mixer.Sound("sounds/sound efect/goblin/hit.mp3")}
 #skeleton.Skeleton.sound={"run":pygame.mixer.Sound("sounds/sound efect/Skeleton/andar.mp3"), "attack":pygame.mixer.Sound("sounds/sound efect/Skeleton/ataque.mp3"),"hurt":pygame.mixer.Sound("sounds/sound efect/Skeleton/hit.mp3")}

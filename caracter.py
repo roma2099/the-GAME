@@ -99,7 +99,7 @@ class Caracter(enteties.Entetie):
             self.hp=0
 
     def push(self,character):
-        if character!=self:
+        if character!=self and self.roll_on==False:
             if self.hit_box.colliderect(character.hit_box):
                 self.movement[0]-=int(self.movement[0]*0.4)
 

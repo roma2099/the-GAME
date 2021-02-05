@@ -12,14 +12,16 @@ class Player(caracter.Caracter):
         self.attack_on = False
         self.attack_combo = 1
         self.attack_next = False
-        self.hit_box = pygame.Rect(7, 8, 21 * 3, 27 * 3)
+        self.hit_box = pygame.Rect(7, 8, 21 * 3, 40 * 3)
         self.reload=0
         self.hp=850
         self.hp_max = 850
 
         self.num_jumps = 0
         self.death=False
-        self.test_mode=False    
+        self.test_mode=True
+        self.block=0
+        self.roll_on=False
 
 
         # \ self.rect.width -= 13
@@ -28,12 +30,19 @@ class Player(caracter.Caracter):
 
     # This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
-    def controle(self, up, down, left, right, jump, k1, k2):
+    def controle(self, up, down, left, right, jump, k1, k2,k3):
 
         # animation
         if self.animation():
-            self.attack_on = False
 
+            if self.roll_on:
+                self.hit_box.y -= 20 * 3
+                self.hit_box.height = 40 * 3
+            self.attack_on = False
+            self.roll_on= False
+
+
+fh
 
 
         if self.hp==0 and self.frame_on != "death":
@@ -41,7 +50,7 @@ class Player(caracter.Caracter):
             self.frame_index = 0
             #Player.sound[self.frame_on].play()
         elif ((self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (
-                self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3") ))and self.hp!=0:
+                self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3") ))and self.hp!=0 and self.roll_on==False:
             if self.attack_next == True and self.attack_on == False:
                 if right and not left:
                     self.side_left = False
@@ -67,25 +76,35 @@ class Player(caracter.Caracter):
             self.reload = 12
 
 #---------------------------------------------------------------------------------------------
-        #elif self.hit_box.height !=27 * 3 and self.frame_on != "crouch":
-        #    self.frame_on = "crouch"
-        #    self.frame_index = 0
 
-        elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False and self.frame_on != "death":
+        elif self.roll_on== True and self.frame_on!="roll" and self.attack_on ==False and self.frame_on!="death":
+            print( self.frame_on)
+
+            self.frame_on = "roll"
+            self.frame_index = 0
+
+        elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False and self.frame_on != "death" and self.roll_on==False:
             self.frame_on = "jump"
             self.frame_index = 0
-            Player.sound[self.frame_on].play()
+            self.play_sound()
 
-        elif self.movement[1] > 0 and self.frame_on != "fall" and self.attack_on == False and self.frame_on != "death" :
+        elif self.movement[1] > 0 and self.frame_on != "fall" and self.attack_on == False and self.frame_on != "death" and self.roll_on==False:
             self.frame_on = "fall"
             self.frame_index = 0
+        elif k2  and self.frame_on!="block idli" and  self.attack_on == False and self.frame_on != "death" and self.roll_on==False:
+            self.frame_on = "block idli"
+            self.frame_index = 0
+        #elif k3  and self.frame_on!="roll" and  self.attack_on == False and self.frame_on != "death":
+        #    self.frame_on = "roll"
+        #    self.frame_index = 0
 
-        elif (left or right) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0  and self.frame_on != "death":#and self.hit_box.height ==27 * 3:
+
+        elif ((left and not right) or (not left and right)) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0  and self.frame_on != "death" and self.block==0 and self.roll_on==False:#and self.hit_box.height ==27 * 3:
             self.frame_on = "run"
             self.frame_index = 0
             self.play_sound()
 
-        elif  self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False and self.frame_on != "death":#and self.hit_box.height ==27 * 3
+        elif  self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False and self.frame_on != "death" and self.block==0 and self.roll_on==False:#and self.hit_box.height ==27 * 3
             self.frame_on = "idle"
             self.frame_index = 0
 
@@ -100,7 +119,7 @@ class Player(caracter.Caracter):
         #            self.attack_combo=1
 
         # if u take the "and down ==False something happends"
-        if jump and self.num_jumps < 2 and down == False:
+        if jump and self.num_jumps < 2 and down == False and self.roll_on==False:
             self.movement[1] = -15
             self.num_jumps += 1
        # if down and self.movement[1] == 0 and self.num_jumps == 0 and self.hit_box.height ==27 * 3:
@@ -114,23 +133,44 @@ class Player(caracter.Caracter):
         if right and left:
             if self.movement[0] != 0:
                 self.movement[0] = int(self.movement[0] * 0.7)
-        elif right and left == False and self.attack_on == False and self.frame_on!="die":# and self.hit_box.height ==27 * 3:
+        elif right and left == False and self.attack_on == False and self.frame_on!="die" and self.block==0 and self.roll_on==False:# and self.hit_box.height ==27 * 3:
             self.side_left = False
-            self.movement[0] += 3
-            if self.movement[0] >= self.run_speed:
-                self.movement[0] = self.run_speed
-        elif right == False and left and self.attack_on == False:# and self.hit_box.height ==27 * 3:
+            if k2==False:
+                self.movement[0] += 3
+                if self.movement[0] >= self.run_speed:
+                    self.movement[0] = self.run_speed
+        elif right == False and left and self.attack_on == False and self.block==0 and self.roll_on==False:# and self.hit_box.height ==27 * 3:
             self.side_left = True
-            self.movement[0] -= 3
-            if self.movement[0] <= -self.run_speed:
-                self.movement[0] = -self.run_speed
+            if k2==False:
+                self.movement[0] -= 3
+                if self.movement[0] <= -self.run_speed:
+                    self.movement[0] = -self.run_speed
+
+
 
         else:
-            if self.movement!=0:
+            if self.movement!=0 and self.roll_on==False:
                 self.movement[0] = int (self.movement[0]*0.7)
+
+        if self.roll_on and self.attack_on==False:
+            if self.side_left:
+                self.movement[0] -= 3
+                if self.movement[0] <= -self.run_speed *1.5:
+                    self.movement[0] = -self.run_speed*1.5
+            else:
+                self.movement[0] += 3
+                if self.movement[0] >= self.run_speed*1.5:
+                    self.movement[0] = self.run_speed*1.5
+
+        if k3:
+            self.hit_box.y+=32*3
+            self.hit_box.height = 8 * 3
+            self.roll_on = True
         # attack
 
-        if k1:
+
+        if k1 :
+
             self.attack_next = True
 
 
@@ -138,6 +178,13 @@ class Player(caracter.Caracter):
 
             self.attack_next = False
             self.attack_on = True
+
+        if k2:
+            self.block+=1
+            print(self.block)
+        else:
+            self.block=0
+
         return
 
     def attack(self, hit_box,screen=None,camera=[0,0]):
@@ -156,7 +203,12 @@ class Player(caracter.Caracter):
                 return hit_box.colliderect(attack_range)
 
     def draw(self, screen, camera=(0, 0)):
-        screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]-15))
+        if self.roll_on:
+            self.rect.center=(self.hit_box.centerx,self.hit_box.centery-66)
+        else:
+            self.rect.center = (self.hit_box.centerx, self.hit_box.centery-15)
+
+        screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
 
         if self.test_mode:
             rect=pygame.Surface(self.hit_box.size).convert_alpha()
@@ -186,7 +238,11 @@ class Player(caracter.Caracter):
         Player.sound[self.frame_on].play()
 
     def damage(self,damage_points):
+        if self.block>0 and self.block<15:
+            self.play_sound()
+        elif self.block>15:
+            super(Player, self).damage(int(damage_points/2))
+        else:
+            super(Player, self).damage(damage_points)
 
-        super(Player, self).damage(damage_points)
-
-        self.movement[1] = -4
+            self.movement[1] = -4
