@@ -12,16 +12,17 @@ class Player(caracter.Caracter):
         self.attack_on = False
         self.attack_combo = 1
         self.attack_next = False
-        self.hit_box = pygame.Rect(7, 8, 21 * 3, 40 * 3)
+        self.hit_box = pygame.Rect(position[0], position[1], 21 * 3, 40 * 3)
         self.reload=0
         self.hp=850
         self.hp_max = 850
 
         self.num_jumps = 0
         self.death=False
-        self.test_mode=True
+        self.test_mode=False
         self.block=0
         self.roll_on=False
+        self.grab_on = True
 
 
         # \ self.rect.width -= 13
@@ -31,6 +32,11 @@ class Player(caracter.Caracter):
     # This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
     def controle(self, up, down, left, right, jump, k1, k2,k3):
+        print(self.num_jumps)
+#-------------------------------------------------------
+        if up:
+            jump=True
+#----------------------------------------------------------
 
         # animation
         if self.animation():
@@ -38,11 +44,13 @@ class Player(caracter.Caracter):
             if self.roll_on:
                 self.hit_box.y -= 20 * 3
                 self.hit_box.height = 40 * 3
+            elif self.grab_on:
+                self.frame_index=4
             self.attack_on = False
             self.roll_on= False
 
 
-fh
+
 
 
         if self.hp==0 and self.frame_on != "death":
@@ -50,7 +58,7 @@ fh
             self.frame_index = 0
             #Player.sound[self.frame_on].play()
         elif ((self.attack_next == True and self.attack_on == False) or (self.attack_on != False and (
-                self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3") ))and self.hp!=0 and self.roll_on==False:
+                self.frame_on != "attack1" and self.frame_on != "attack2" and self.frame_on != "attack3") ))and self.hp!=0 and self.roll_on==False and self.grab_on==False:
             if self.attack_next == True and self.attack_on == False:
                 if right and not left:
                     self.side_left = False
@@ -76,8 +84,13 @@ fh
             self.reload = 12
 
 #---------------------------------------------------------------------------------------------
+        elif self.frame_on!="grab" and self.grab_on :
 
-        elif self.roll_on== True and self.frame_on!="roll" and self.attack_on ==False and self.frame_on!="death":
+            self.frame_on = "grab"
+            self.frame_index = 0
+
+
+        elif self.roll_on== True and self.frame_on!="roll" and self.attack_on ==False and self.frame_on!="death"and not self.grab_on :
             print( self.frame_on)
 
             self.frame_on = "roll"
@@ -99,12 +112,12 @@ fh
         #    self.frame_index = 0
 
 
-        elif ((left and not right) or (not left and right)) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0  and self.frame_on != "death" and self.block==0 and self.roll_on==False:#and self.hit_box.height ==27 * 3:
+        elif ((left and not right) or (not left and right)) and self.frame_on != "run" and self.num_jumps == 0 and self.attack_on == False and self.movement [1]==0  and self.frame_on != "death" and self.block==0 and self.roll_on==False and not self.grab_on:#and self.hit_box.height ==27 * 3:
             self.frame_on = "run"
             self.frame_index = 0
             self.play_sound()
 
-        elif  self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False and self.frame_on != "death" and self.block==0 and self.roll_on==False:#and self.hit_box.height ==27 * 3
+        elif  self.movement[0] == 0 and self.movement[1] == 0 and self.frame_on != "idle" and self.num_jumps == 0 and self.attack_on == False and self.frame_on != "death" and self.block==0 and self.roll_on==False and not self.grab_on:#and self.hit_box.height ==27 * 3
             self.frame_on = "idle"
             self.frame_index = 0
 
@@ -120,7 +133,8 @@ fh
 
         # if u take the "and down ==False something happends"
         if jump and self.num_jumps < 2 and down == False and self.roll_on==False:
-            self.movement[1] = -15
+            self.grab_on=False
+            self.movement[1] = -17
             self.num_jumps += 1
        # if down and self.movement[1] == 0 and self.num_jumps == 0 and self.hit_box.height ==27 * 3:
        #     self.hit_box.height = self.hit_box.height / 2
@@ -134,12 +148,16 @@ fh
             if self.movement[0] != 0:
                 self.movement[0] = int(self.movement[0] * 0.7)
         elif right and left == False and self.attack_on == False and self.frame_on!="die" and self.block==0 and self.roll_on==False:# and self.hit_box.height ==27 * 3:
+            if self.side_left and self.grab_on:
+                self.grab_on=False
             self.side_left = False
             if k2==False:
                 self.movement[0] += 3
                 if self.movement[0] >= self.run_speed:
                     self.movement[0] = self.run_speed
         elif right == False and left and self.attack_on == False and self.block==0 and self.roll_on==False:# and self.hit_box.height ==27 * 3:
+            if not self.side_left and self.grab_on:
+                self.grab_on=False
             self.side_left = True
             if k2==False:
                 self.movement[0] -= 3
@@ -162,7 +180,7 @@ fh
                 if self.movement[0] >= self.run_speed*1.5:
                     self.movement[0] = self.run_speed*1.5
 
-        if k3:
+        if k3 and not self.attack_on and not self.roll_on and self.block==0:
             self.hit_box.y+=32*3
             self.hit_box.height = 8 * 3
             self.roll_on = True
@@ -246,3 +264,66 @@ fh
             super(Player, self).damage(damage_points)
 
             self.movement[1] = -4
+
+    def move(self, barreiras):
+        # Mudar depois, pq se colidir em duas barreiras do mesmo lado, por exemplo a direita e detectar primeiro a menos aa direita a posisao sera atualizada para a barreiramais a direita, assim atravesando a menos a direita!!!
+
+        # gravidade talvez fique no controle
+
+
+
+        self.gravity()
+
+        # mover no y
+
+        if self.grab_on:
+            self.movement[1]=0
+
+        self.hit_box.y += self.movement[1]
+        # lista das barreiras que colidio
+
+        collisinons = self.move_collision(barreiras)
+        for barreira in collisinons:
+            if self.movement[1] < 0:
+                self.hit_box.top = barreira.rect.bottom
+                self.movement[1] = 0
+            if self.movement[1] > 0:
+                self.hit_box.bottom = barreira.rect.top
+                self.movement[1] = 0
+                self.num_jumps = 0
+
+        # mover no x
+        self.hit_box.x += self.movement[0]
+        # lista das barreiras que colidio
+        collisinons = self.move_collision(barreiras)
+
+        for barreira in collisinons:
+            if self.movement[0] < 0:
+#--------------------------------------------------------------------------------------------------
+
+                if self.grab_on==False and(self.frame_on=="fall" or self.frame_on=="jump") and self.hit_box.top-barreira.rect.top<6 and self.hit_box.top-barreira.rect.top>-2 and (barreira.index==10 or barreira.index==4 or barreira.index==15):
+                    self.grab_on=True
+                    self.num_jumps=0
+                    self.hit_box.topleft = barreira.rect.topright
+
+                else:
+                    self.hit_box.left = barreira.rect.right
+            elif self.movement[0] > 0:
+                if self.grab_on==False and(self.frame_on=="fall" or self.frame_on=="jump") and self.hit_box.top-barreira.rect.top<6 and self.hit_box.top-barreira.rect.top>-2 and (barreira.index==10 or barreira.index==4 or barreira.index==15):
+                    self.grab_on=True
+                    self.num_jumps = 0
+                    self.hit_box.topright = barreira.rect.topleft
+                else:
+                    self.hit_box.right = barreira.rect.left
+        self.rect.center = self.hit_box.center
+
+        return
+    def move_collision(self, barreiras):
+        collision = []
+
+        for barreira in barreiras:
+
+            if self.hit_box.colliderect(barreira.rect):
+                collision.append(barreira)
+        return collision
+

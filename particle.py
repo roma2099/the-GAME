@@ -11,6 +11,7 @@ class Particle(enteties.Entetie):
 
 
     def draw(self, screen, camera=(0, 0)):
+
         for particle in self.particle_list:
             particle[0][0] += particle[1][0]
             particle[0][1] += particle[1][1]

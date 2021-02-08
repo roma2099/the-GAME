@@ -23,7 +23,9 @@ def get_files_from_directory(directory):
 
     return files
 def get_map(directory):
-    tile.Tile.img.append(img_load(r"sprites/tiles/Tile_1.png", 2))
+    tiles=get_files_from_directory("sprites/tile/individual")
+    for i in tiles:
+        tile.Tile.img.append(img_load(i, 2))
 
 
 
@@ -61,11 +63,11 @@ def fix_enemy(enteties_list,entetie_class=None):
     return new_list
 def draw_backgound(screen, images, camera):
     bg_move = 0
-    num = 1
+    num = 2
     for image in images:
-        for i in range(0, num):
+        for i in range(-1, num):
             screen.blit(image,
-                        (i * image.get_width() - int(camera[0] * bg_move), screen.get_height() - image.get_height()))
+                        (i * image.get_width() - int(camera[0] * bg_move), screen.get_height() - image.get_height() ))
         bg_move += 0.05
         num += 1
 

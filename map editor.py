@@ -1,10 +1,141 @@
 import pygame
 import pickle
-import skeleton,mushroom
+import skeleton,mushroom,random,templates
 from fuctions import *
 from tile import *
 from goblin import *
 from accessorie import *
+
+
+
+def generate_level(tile_list):
+    # Creating the solution path list
+    tile_list.clear()
+    level = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ]
+
+    row = 0
+    # Placing the entrance randomly
+    col = random.randint(0, 3)
+
+    level[row][col] = 1
+    while True:
+        direction = random.randint(1, 5)
+
+        previous = (row, col)
+
+        if direction == 1 or direction == 2:
+            col -= 1
+        elif direction == 3 or direction == 4:
+            col += 1
+        else:
+            row += 1
+
+        if col < 0:
+            col += 1
+            row += 1
+
+        if col > 3:
+            col -= 1
+            row += 1
+
+        if row > 3:
+            break
+
+        if previous[0] < row:
+            level[previous[0]][previous[1]] = 2
+            level[row][col] = 3
+        elif level[row][col] == 0:
+            level[row][col] = 1
+
+
+    for rows in range(0,len(level)):
+
+        for cols in range(0,len(level[rows])):
+            # Switching to the correct template
+            if cols == 0:
+                current_template = templates.templates_all[random.randrange(0, len(templates.templates_all))]
+            if cols == 1:
+                current_template = templates.templates_lr[random.randrange(0, len(templates.templates_lr))]
+            elif cols == 2:
+                current_template = templates.templates_tlbr[random.randrange(0, len(templates.templates_tlbr))]
+            elif cols == 3:
+                current_template = templates.templates_tlr[random.randrange(0, len(templates.templates_tlr))]
+
+
+
+            # Randomly flip the template
+            if random.randint(0, 1) == 1:
+                for flip in current_template:
+                    flip.reverse()
+            level[rows][cols]=current_template
+
+
+            for temp_rows in range(0,len(current_template)):
+
+                for temp_cols in range(0,len(current_template[temp_rows])):
+                    if current_template[temp_rows][temp_cols] == 1:
+                        new_tile = Tile((temp_cols+cols*16,temp_rows+rows*16), 0)
+                        tile_list.append(new_tile)
+
+
+    return level
+
+
+def fixe_tiles(tile_list):
+
+    for tile in tile_list:
+        up = False
+        down = False
+        left = False
+        right = False
+        for neibor in tile_list:
+            if neibor.rect.center== (tile.rect.center[0],tile.rect.center[1]-tile.rect.height):
+                up=True
+            if neibor.rect.center == (tile.rect.center[0], tile.rect.center[1] + tile.rect.height):
+                down=True
+            if neibor.rect.center == (tile.rect.center[0]- tile.rect.width, tile.rect.center[1] ):
+                left=True
+            if neibor.rect.center == (tile.rect.center[0]+ tile.rect.width, tile.rect.center[1]):
+                right=True
+
+        if up and down and left and right:
+            tile.index=0
+        elif not up and down and not left and right:
+            tile.index=4
+        elif up and down and not left and right:
+            tile.index=1
+        elif up and not down and not left and right:
+            tile.index=2
+        elif  not up and  down and left and right:
+            tile.index=5
+        elif up and not down and left and right:
+            tile.index=7
+        elif not up and down and left and not right:
+            tile.index=10
+        elif  up and down and left and not right:
+            tile.index=11
+        elif up and not down and left and not  right:
+            tile.index=12
+        elif not up and down and not left and not right:
+            tile.index=15
+        elif  up and down and not left and not right:
+            tile.index=16
+        elif up and not down and not left and not right:
+            tile.index=17
+        elif  left and right:
+            tile.index=5
+        elif not left and right:
+            tile.index=4
+        elif  left and not right:
+            tile.index=10
+        else :
+            tile.index=15
+
 
 
 
@@ -29,7 +160,7 @@ def add_and_remove(Entety, entety_list, cousor_entety, camera):
 
 
     if pygame.mouse.get_pressed() == (0, 0, 1):
-        entety_i = Entety((0, 0), 0)
+        entety_i = Entety((0, 0), 4)
         entety_i.rect.x = cousor_entety.rect.x + camera[0]
         entety_i.rect.y = cousor_entety.rect.y + camera[0]
 
@@ -52,7 +183,10 @@ def editor():
     clock = pygame.time.Clock()
     keepGoing = True
 
-    Tile.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
+    tiles = get_files_from_directory("sprites/tile/individual")
+    for i in tiles:
+        tile.Tile.img.append(img_load(i, 1))
+
     Goblin.frame= {'idle':[img_load("sprites/Enemies/Goblin/individual/goblin-idle-0.png",1.5)]}
     skeleton.Skeleton.frame = {'idle': [img_load("sprites/Enemies/Skeleton/individual/skeleton-idle-0.png", 1.5)]}
     mushroom.Mushroom.frame = {'idle': [img_load("sprites/Enemies/Mushroom/individual/mushroom-idle-00.png", 1.5)]}
@@ -110,6 +244,11 @@ def editor():
                     k_left = True
                 if event.key == pygame.K_RIGHT:
                     k_rigth = True
+                if event.key == pygame.K_f:
+                    fixe_tiles(tile_list)
+            #-------------------------------------------------
+                if event.key == pygame.K_g:
+                    print (generate_level(tile_list))
 
                 if event.key == pygame.K_s:
                     with open("maps/map_1.txt", "wb") as map_file:

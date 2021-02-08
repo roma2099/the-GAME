@@ -4,7 +4,7 @@ import pygame, enteties
 class Tile(enteties.Entetie):
     img = []
 
-    def __init__(self,position,index):
+    def __init__(self,position,index=4):
         self.index = index
         self.rect = pygame.Rect(
             Tile.img[0].get_width() * position[0],

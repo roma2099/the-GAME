@@ -18,6 +18,7 @@ class Enemy(caracter.Caracter):
         self.limits=(position[0]-200,position[0]+200)
         self.reload=0
         self.reload_max=35
+        self.projectile_list=[]
 
 
         self.set_hit_box(self.rect)
@@ -251,3 +252,10 @@ class Enemy(caracter.Caracter):
 
     def play_sound(self):
         pass
+
+    def especial_attack(self,player,a):
+        return False
+    def draw_projectil(self, screen, camera=(0, 0)):
+        pass
+
+

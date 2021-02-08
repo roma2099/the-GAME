@@ -3,14 +3,24 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-import pygame, player, sys, os, tile, enemy, accessorie, pickle, skeleton,mushroom,boss
+
+import os, sys
+dirpath = os.getcwd()
+sys.path.append(dirpath)
+if getattr(sys, "frozen", False):
+    os.chdir(sys._MEIPASS)
+###
+
+import pygame, player, sys, os, tile, enemy, accessorie, pickle, skeleton,mushroom,boss,projectil,goblin
 from particle import *
 from fuctions import *
 from goblin import *
 
 
 
-titulo="Something Something"
+titulo="Death Souls"
+
+
 def draw_text(text, font, color, surface, x, y):
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
@@ -21,7 +31,9 @@ def draw_text(text, font, color, surface, x, y):
 
 
 def main_menu():
-    font = pygame.font.SysFont("fixedsys", 69)
+    print(pygame.font.get_fonts())
+    font = pygame.font.SysFont("courier", 69)
+    font_titulo =  pygame.font.SysFont("courier", 90,True)
     click = False
     volume=1
     music = pygame.mixer.music.load(
@@ -31,16 +43,19 @@ def main_menu():
     confirmar = pygame.mixer.Sound("sounds/sound efect/menu/corfimar.mp3")
     cor1=(55, 200, 129)
     cor2=(55, 20, 129)
+    cor3=(55, 200,129)
     while True:
 
         screen.fill((27, 27, 27))
-        draw_text(titulo, font, (255, 255, 255), screen, screen_size[0]/2, 100)
+        draw_text(titulo, font_titulo, (255, 255, 255), screen, screen_size[0]/2, 100)
 
         mx, my = pygame.mouse.get_pos()
 
         button_1 = pygame.Rect(screen_size[0]/2-200, 200, 400, 100)
 
-        button_2 = pygame.Rect(screen_size[0]/2-200, 400, 400, 100)
+        button_2 = pygame.Rect(screen_size[0]/2-200, 350, 400, 100)
+
+        button_3 = pygame.Rect(screen_size[0] / 2 - 200, 500, 400, 100)
 
 
         if button_1.collidepoint((mx, my)):
@@ -72,10 +87,25 @@ def main_menu():
         else:
             cor2 = (129, 200, 55)
 
-        pygame.draw.rect(screen,cor1 , button_1)
-        pygame.draw.rect(screen, cor2, button_2)
-        draw_text("Start", font, (255, 255, 255), screen, button_1.center[0], button_1.center[1])
-        draw_text("Options", font, (255, 255, 255), screen, button_2.center[0], button_2.center[1])
+        if button_3.collidepoint((mx, my)):
+            if cor3!= (129, 20, 55):
+                selecionar.play()
+                cor3 = (129, 20, 55)
+            cor3 = (129, 20 , 55)
+            if click:
+                confirmar.play()
+                pygame.mixer.fadeout(1000)
+                clock.tick(1)
+                quit()
+        else:
+            cor3 = (129, 200, 55)
+
+        pygame.draw.rect(screen,cor1 , button_1,5,20)
+        pygame.draw.rect(screen, cor2, button_2,5,20)
+        pygame.draw.rect(screen, cor3, button_3, 5, 20)
+        draw_text("Start", font, (240, 240, 240), screen, button_1.center[0], button_1.center[1])
+        draw_text("Options", font, (240, 240, 240), screen, button_2.center[0], button_2.center[1])
+        draw_text("Exit", font, (240, 240, 240), screen, button_3.center[0], button_3.center[1])
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -94,7 +124,8 @@ def main_menu():
         clock.tick(60)
 
 def options(volume):
-    font = pygame.font.SysFont("fixedsys", 60)
+    font = pygame.font.SysFont("courier", 69)
+    font_titulo = pygame.font.SysFont("courier", 90, True)
 
     click = False
 
@@ -106,13 +137,16 @@ def options(volume):
     while True:
 
         screen.fill((27, 27, 27))
-        draw_text(titulo, font, (255, 255, 255), screen, screen_size[0]/2, 100)
+        draw_text("Options", font_titulo, (255, 255, 255), screen, screen_size[0]/2, 100)
 
         mx, my = pygame.mouse.get_pos()
 
         button_1 = pygame.Rect(200, 200, 100, 100)
-
-        button_2 = pygame.Rect(screen_size[0]-200, 200, 100, 100)
+        button_2 = pygame.Rect(screen_size[0]-200-100, 200, 100, 100)
+        barra=pygame.Rect(320,225,700,20)
+        circulo=pygame.Rect(320,225,40,100)
+        barra.center=(screen_size[0]/2,250)
+        circulo.center =(350 + 660*volume,250)
         exit_button= pygame.Rect(screen_size[0]/2-200, screen_size[1]-200, 400, 100)
 
         if button_1.collidepoint((mx, my)):
@@ -164,11 +198,17 @@ def options(volume):
 
 
 
-        pygame.draw.rect(screen,cor1 , button_1)
-        pygame.draw.rect(screen, cor2, button_2)
-        pygame.draw.rect(screen,cor3,exit_button)
-        draw_text("<", font, (255, 255, 255), screen, button_1.center[0], button_1.center[1])
-        draw_text(">", font, (255, 255, 255), screen, button_2.center[0], button_2.center[1])
+        pygame.draw.rect(screen,cor1 , button_1,5,30)
+        pygame.draw.rect(screen, cor2, button_2,5,30)
+        pygame.draw.rect(screen,cor3,exit_button,5,20)
+
+        pygame.draw.rect(screen, (129, 200, 55), barra, 0, 20)
+        pygame.draw.rect(screen,  (55, 129, 200), circulo, 0, 20)
+
+
+
+        draw_text("-", font, (255, 255, 255), screen, button_1.center[0], button_1.center[1])
+        draw_text("+", font, (255, 255, 255), screen, button_2.center[0], button_2.center[1])
         draw_text("back", font, (255, 255, 255), screen, exit_button.center[0], exit_button.center[1])
         click = False
         for event in pygame.event.get():
@@ -190,7 +230,8 @@ def options(volume):
 
 def level_1(volume):
     global goblin_list,skeletom_list,mushroom_list
-    mc = player.Player((100, 100))
+    mc = player.Player((100, -300))
+
 
 
 
@@ -219,7 +260,7 @@ def level_1(volume):
     particles_list = []
 
     wizard=boss.Boss((1000, 200))
-    w_list=[wizard]
+    w_list=[boss.Boss((3577,772)),goblin.Goblin((3097,-60)),mushroom.Mushroom((1069,-60))]
 
     k_left = False
     k_right = False
@@ -237,11 +278,13 @@ def level_1(volume):
     pygame.mixer.music.set_volume(volume)
     mushroom_list.append(mushroom_1)
     while True:
-        if mc.frame_on=="death"and mc.frame_index >=9:
+        if (mc.frame_on=="death"and mc.frame_index >=9 )or mc.hit_box.y==3000:
+            clock.tick(0.8)
             return
         k_space = False
         k_j = False
         k_l=False
+
 
 
         # EVENTS------------------------------------------------------------------------------------
@@ -297,7 +340,7 @@ def level_1(volume):
 
         # CAMERA ----------------------------------------------------------------------------------------------
         camera[0] += (mc.rect.centerx - camera[0] - screen.get_height()) / 7
-        camera[1] += (mc.rect.centery - camera[1] - screen.get_height() * (6 / 10)) / 7
+        camera[1] += (mc.rect.centery - camera[1]-100 - screen.get_height() * (6 / 10)) / 7
 
         # ------------------------------------------------------------------------------------------------------
 
@@ -324,7 +367,7 @@ def level_1(volume):
 
                 mc.push(enemy)
 
-                if enemy.attack(mc):
+                if enemy.attack(mc) or enemy.especial_attack(mc,barriers) :
                     mc.damage(50)
                     print(mc.hp)
 
@@ -374,25 +417,25 @@ def level_1(volume):
 
 pygame.init()
 
-screen_size = (272 * 4, 160 * 4)
+screen_size = (340 * 4, 190 * 4)
 screen = pygame.display.set_mode(screen_size)
 
 bg = []
 
-for i in get_files_from_directory("sprites/background"):
-    x = img_load(i, 4)
+for i in get_files_from_directory("sprites/background/brown"):
+    x = img_load(i, 3)
 
     bg.append(x)
 
     ##bg.fill((100, 200, 150))
 
-
-player.Player.frame= make_dic_images(get_files_from_directory("sprites/player/Hero Knight/individual"),["run", "fall", "death", "hurt", "idle", "crouch", "jump", "attack1", "attack2","attack3","block idli","roll"])
+projectil.Projectil.frame= make_dic_images(get_files_from_directory("sprites/projectile/individual"),["ball", "explosion"])
+player.Player.frame= make_dic_images(get_files_from_directory("sprites/player/Hero Knight/individual"),["run", "fall", "death", "hurt", "idle", "crouch", "jump", "attack1", "attack2","attack3","block idli","roll","grab"])
 Goblin.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Goblin/individual"), ["idle","run","death","attack","shield","take"])
 skeleton.Skeleton.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Skeleton/individual"), ["idle","run","death","attack","shield","take"])
 mushroom.Mushroom.frame = make_dic_images (get_files_from_directory("sprites/Enemies/Mushroom/individual"), ["idle","run","death","attack","shield","take"])
 boss.Boss.frame= make_dic_images(get_files_from_directory("sprites/Enemies/Boss 2/individual"), ["idle","run","death","attack","shield","take"])
-player.Player.sound={"attack1":pygame.mixer.Sound("sounds/sound efect/player/espada 1.mp3"),"attack2":pygame.mixer.Sound("sounds/sound efect/player/espada 2.mp3"),"attack3":pygame.mixer.Sound("sounds/sound efect/player/espada 3.mp3"),"run":pygame.mixer.Sound("sounds/sound efect/player/run1.mp3"),"jump":pygame.mixer.Sound("sounds/sound efect/player/Jump sound effect.mp3")}
+player.Player.sound={"attack1":pygame.mixer.Sound("sounds/sound efect/player/espada 1.mp3"),"attack2":pygame.mixer.Sound("sounds/sound efect/player/espada 2.mp3"),"attack3":pygame.mixer.Sound("sounds/sound efect/player/espada 3.mp3"),"run":pygame.mixer.Sound("sounds/sound efect/player/run1.mp3"),"jump":pygame.mixer.Sound("sounds/sound efect/player/Jump sound effect.mp3"),"block idli":pygame.mixer.Sound("sounds/sound efect/player/Gravação (5).mp3")}
 #Goblin.sound={"run":pygame.mixer.Sound("sounds/sound efect/goblin/run.mp3"), "attack":pygame.mixer.Sound("sounds/sound efect/goblin/ataque.mp3"), "hurt":pygame.mixer.Sound("sounds/sound efect/goblin/hit.mp3")}
 #skeleton.Skeleton.sound={"run":pygame.mixer.Sound("sounds/sound efect/Skeleton/andar.mp3"), "attack":pygame.mixer.Sound("sounds/sound efect/Skeleton/ataque.mp3"),"hurt":pygame.mixer.Sound("sounds/sound efect/Skeleton/hit.mp3")}
 mushroom.Mushroom.sound={"run":pygame.mixer.Sound("sounds/sound efect/Mushroom/run.mp3"), "attack":pygame.mixer.Sound("sounds/sound efect/Mushroom/ataque.mp3"), "hurt":pygame.mixer.Sound("sounds/sound efect/Mushroom/hit.mp3")}
