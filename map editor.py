@@ -1,10 +1,11 @@
 import pygame
 import pickle
-import skeleton,mushroom,random,templates
+import skeleton,mushroom,random,templates,spikes
 from fuctions import *
 from tile import *
 from goblin import *
 from accessorie import *
+
 
 
 
@@ -79,7 +80,7 @@ def generate_level(tile_list):
 
                 for temp_cols in range(0,len(current_template[temp_rows])):
                     if current_template[temp_rows][temp_cols] == 1:
-                        new_tile = Tile((temp_cols+cols*16,temp_rows+rows*16), 0)
+                        new_tile = Tile((16+temp_cols*32+cols*16*32,16+temp_rows*32+rows*16*32), 0)
                         tile_list.append(new_tile)
 
 
@@ -161,8 +162,8 @@ def add_and_remove(Entety, entety_list, cousor_entety, camera):
 
     if pygame.mouse.get_pressed() == (0, 0, 1):
         entety_i = Entety((0, 0), 4)
-        entety_i.rect.x = cousor_entety.rect.x + camera[0]
-        entety_i.rect.y = cousor_entety.rect.y + camera[0]
+        entety_i.rect.x = cousor_entety.rect.x + int(camera[0] / 32) * 32
+        entety_i.rect.y = cousor_entety.rect.y + int(camera[1] / 32) * 32
 
         obj_remove = check_object_in_list(entety_i, entety_list)
         if obj_remove != None:
@@ -187,26 +188,28 @@ def editor():
     for i in tiles:
         tile.Tile.img.append(img_load(i, 1))
 
-    Goblin.frame= {'idle':[img_load("sprites/Enemies/Goblin/individual/goblin-idle-0.png",1.5)]}
+    Goblin.frame= {'idle':[img_load("sprites/Enemies/Goblin/individual/goblin-idle-00.png",1.5)]}
     skeleton.Skeleton.frame = {'idle': [img_load("sprites/Enemies/Skeleton/individual/skeleton-idle-0.png", 1.5)]}
     mushroom.Mushroom.frame = {'idle': [img_load("sprites/Enemies/Mushroom/individual/mushroom-idle-00.png", 1.5)]}
-
+    spikes.Spikes.frames=[img_load("sprites/Spikes/spikes6.png",1)]
     # Accessorie.img.append((pygame.image.load("sprites/tiles/Tile_1.png").convert()))
     one_tile = Tile((0, 0), 0)
     one_goblin = Goblin((0, 0),0)
     one_mushroom=mushroom.Mushroom((0,0),0)
     one_skeleton = skeleton.Skeleton((0, 0), 0)
+    one_spike= spikes.Spikes((0,0),0)
 
     # one_accessories = Accessorie((0, 0), 0)
+    spike_list=[]
     tile_list = []
     goblin_list = []
     skeleton_list = []
     mushroom_list =[]
     accessories_list = []
 #-----------------------------
-    tipo=[one_tile, one_goblin,one_mushroom,one_skeleton]
-    tipo_list=[tile_list,goblin_list,mushroom_list,skeleton_list]
-    tipo_class=[Tile,     Goblin ,mushroom.Mushroom,skeleton.Skeleton]
+    tipo=[one_tile, one_goblin,one_mushroom,one_skeleton,one_spike]
+    tipo_list=[tile_list,goblin_list,mushroom_list,skeleton_list,spike_list]
+    tipo_class=[Tile,     Goblin ,mushroom.Mushroom,skeleton.Skeleton,spikes.Spikes]
 
 
 
@@ -251,7 +254,7 @@ def editor():
                     print (generate_level(tile_list))
 
                 if event.key == pygame.K_s:
-                    with open("maps/map_1.txt", "wb") as map_file:
+                    with open("maps/map_2.txt", "wb") as map_file:
                         for list in tipo_list:
                           for element in list:
                               element.rect.x *= 2
@@ -288,13 +291,13 @@ def editor():
                     add_and_remove(tipo_class[choise], tipo_list[choise], tipo[choise], camera)
 
         if k_up:
-            camera[1] += -4
+            camera[1] += -32
         if k_down:
-            camera[1] += 4
+            camera[1] += 32
         if k_left:
-            camera[0] += -4
+            camera[0] += -32
         if k_rigth:
-            camera[0] += 4
+            camera[0] += 32
 
         screen.blit(background,(0,0))
 
@@ -309,7 +312,7 @@ def editor():
 
 
 
-        tipo[choise].draw(screen, (-camera[0] % 32, -camera[1] % 32))
+        tipo[choise].draw(screen, (-camera[0]/32 , -camera[1]/32 ))
 
 
         pygame.display.update()

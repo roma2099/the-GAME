@@ -7,8 +7,8 @@ class Tile(enteties.Entetie):
     def __init__(self,position,index=4):
         self.index = index
         self.rect = pygame.Rect(
-            Tile.img[0].get_width() * position[0],
-            Tile.img[0].get_width() * position[1],
+            position[0],
+            position[1],
             Tile.img[0].get_width(),
             Tile.img[0].get_height()
         )
@@ -17,4 +17,5 @@ class Tile(enteties.Entetie):
         self.index = index
 
     def draw(self, screen, camera):
-        screen.blit(Tile.img[self.index], (self.rect.x - camera[0], self.rect.y - camera[1]))
+        if self.rect.centerx - camera[0] > -100 and self.rect.centerx - camera[0] < 1400 and self.rect.centery - camera[1] > -50 and self.rect.centery - camera[1] < 800:
+            screen.blit(Tile.img[self.index], (self.rect.x - camera[0], self.rect.y - camera[1]))

@@ -25,6 +25,7 @@ class Caracter(enteties.Entetie):
 
 
 
+
     def update(self):
         return
 

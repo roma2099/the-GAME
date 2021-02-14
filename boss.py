@@ -12,8 +12,8 @@ class Boss(enemy.Enemy):
         self.run_speed = 4
         self.reload = 0
         self.reload_max = 20
-        self.hp = 200
-        self.hp_max = 5000
+        self.hp = 500
+        self.hp_max = 500
         self.test_mode=False
         self.projectile_list=[]
         self. reload_projectile=0
@@ -23,7 +23,7 @@ class Boss(enemy.Enemy):
 
             projectil.draw(screen,camera)
 
-        screen.blit(pygame.transform.flip(Boss.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
+            screen.blit(pygame.transform.flip(Boss.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
         rect = pygame.Surface(self.hit_box.size).convert_alpha()
         rect.fill((200, 0, 0, 100))
         if self.test_mode:
@@ -38,6 +38,7 @@ class Boss(enemy.Enemy):
                     attack_range.midleft = self.hit_box.midright
 
                 screen.blit(attack_range_surface,(attack_range.x - camera[0], attack_range.y - camera[1]))
+        self.draw_live_bar(screen,camera)
 
     def controle(self, up, down, left, right, jump, k1, k2):
         super(Boss, self).controle( up, down, left, right, jump, k1, k2)

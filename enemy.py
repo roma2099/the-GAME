@@ -150,7 +150,7 @@ class Enemy(caracter.Caracter):
         # attack
 
         if k1:
-            self.attack_next = True
+            self.attack_on = True
 
         if self.attack_next == True and self.attack_on == False:
             self.attack_next = False
@@ -240,6 +240,7 @@ class Enemy(caracter.Caracter):
 
             self.reload-=1
             if self.reload==0:
+                self.reload=self.reload_max
 
                 attack_range = pygame.Rect(10, 10, 100, 100)
                 if self.side_left:
@@ -257,5 +258,15 @@ class Enemy(caracter.Caracter):
         return False
     def draw_projectil(self, screen, camera=(0, 0)):
         pass
+
+    def draw_live_bar(self,screen,camera=(0,0)):
+
+
+        barra = pygame.Rect(0,0, 40, 10)
+        barra.center=( self.hit_box.centerx - camera[0], self.hit_box.bottom - camera[1]+3)
+
+        conteudo = pygame.Rect(barra.x,barra.y, int(barra.width * (self.hp/ self.hp_max)), barra.height)
+        pygame.draw.rect(screen, (200, 8, 20), conteudo)
+        pygame.draw.rect(screen, (200, 200, 200), barra, 3, 0)
 
 

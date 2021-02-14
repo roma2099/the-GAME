@@ -1,7 +1,8 @@
-import pygame, caracter
+import pygame, caracter, math
 
 
 class Player(caracter.Caracter):
+    volume=1
     frame={}
     sound = {}
     def __init__(self, position=(0, 0)):
@@ -12,17 +13,20 @@ class Player(caracter.Caracter):
         self.attack_on = False
         self.attack_combo = 1
         self.attack_next = False
-        self.hit_box = pygame.Rect(position[0], position[1], 21 * 3, 40 * 3)
+        self.hit_box = pygame.Rect(position[0], position[1], 14 * 3, 40 * 3)
         self.reload=0
         self.hp=850
         self.hp_max = 850
 
         self.num_jumps = 0
         self.death=False
-        self.test_mode=False
+        self.test_mode= False
         self.block=0
         self.roll_on=False
         self.grab_on = True
+        self.attack_range = pygame.Rect(10, 10, 100, 100)
+        self.hurt=0
+        self.enemy=None
 
 
         # \ self.rect.width -= 13
@@ -32,7 +36,9 @@ class Player(caracter.Caracter):
     # This funtion is to controle the player movement, changes the side (for the img) , the atribute movement is list where [x_movement , y_movement]
 
     def controle(self, up, down, left, right, jump, k1, k2,k3):
-        print(self.num_jumps)
+        if self.hurt!=0:
+            self.hurt-=1
+
 #-------------------------------------------------------
         if up:
             jump=True
@@ -73,7 +79,7 @@ class Player(caracter.Caracter):
                     self.attack_combo = 1
             else:
                 self.attack_combo = 1
-                print(1)
+
 
             self.frame_on = "attack" + str(self.attack_combo)
             self.frame_index = 0
@@ -96,15 +102,15 @@ class Player(caracter.Caracter):
             self.frame_on = "roll"
             self.frame_index = 0
 
-        elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False and self.frame_on != "death" and self.roll_on==False:
+        elif self.movement[1] < 0 and self.frame_on != "jump" and self.attack_on == False and self.frame_on != "death" and self.roll_on==False and self.block==0:
             self.frame_on = "jump"
             self.frame_index = 0
             self.play_sound()
 
-        elif self.movement[1] > 0 and self.frame_on != "fall" and self.attack_on == False and self.frame_on != "death" and self.roll_on==False:
+        elif self.movement[1] > 0 and self.frame_on != "fall" and self.attack_on == False and self.frame_on != "death" and self.roll_on==False and self.block==0:
             self.frame_on = "fall"
             self.frame_index = 0
-        elif k2  and self.frame_on!="block idli" and  self.attack_on == False and self.frame_on != "death" and self.roll_on==False:
+        elif k2  and self.frame_on!="block idli" and  self.attack_on == False and self.frame_on != "death" and self.roll_on==False and self.grab_on==False:
             self.frame_on = "block idli"
             self.frame_index = 0
         #elif k3  and self.frame_on!="roll" and  self.attack_on == False and self.frame_on != "death":
@@ -180,9 +186,9 @@ class Player(caracter.Caracter):
                 if self.movement[0] >= self.run_speed*1.5:
                     self.movement[0] = self.run_speed*1.5
 
-        if k3 and not self.attack_on and not self.roll_on and self.block==0:
-            self.hit_box.y+=32*3
-            self.hit_box.height = 8 * 3
+        if k3 and not self.attack_on and not self.roll_on and self.block==0 and not self.grab_on:
+            self.hit_box.y+=38*3
+            self.hit_box.height = 2 * 3
             self.roll_on = True
         # attack
 
@@ -197,51 +203,82 @@ class Player(caracter.Caracter):
             self.attack_next = False
             self.attack_on = True
 
-        if k2:
+        if k2 and not self.grab_on:
             self.block+=1
-            print(self.block)
+
         else:
             self.block=0
 
+
+        if self.side_left:
+            self.attack_range.midright = self.hit_box.midleft
+        else:
+            self.attack_range.midleft = self.hit_box.midright
+
         return
 
+
+
     def attack(self, hit_box,screen=None,camera=[0,0]):
+
         if self.attack_on :
+
+
 
             self.reload-=1
             if self.reload==0:
+                attack_range=self.attack_range
 
-                attack_range = pygame.Rect(10, 10, 100, 100)
-                if self.side_left:
-                    attack_range.midright = self.hit_box.midleft
-                else:
-                    attack_range.midleft = self.hit_box.midright
+
+
+
   # I need to know in what side they got hit on
+                if hit_box.colliderect(attack_range):
+                    print("Hello")
 
-                return hit_box.colliderect(attack_range)
+
+
+
+                    return True
+                else :
+                    return False
 
     def draw(self, screen, camera=(0, 0)):
+
+        pygame.draw.line(screen,(150,150,150),(self.hit_box.centerx-camera[0],self.hit_box.centery-camera[1]),(self.enemy.hit_box.centerx-camera[0],self.enemy.hit_box.centery-camera[1]),3)
+
         if self.roll_on:
             self.rect.center=(self.hit_box.centerx,self.hit_box.centery-66)
         else:
             self.rect.center = (self.hit_box.centerx, self.hit_box.centery-15)
 
-        screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
+        if self.grab_on:
+            screen.blit(
+                pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),
+                (self.rect.x - camera[0], self.rect.y - camera[1]+13))
+        else:
+            screen.blit(pygame.transform.flip(Player.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]))
 
         if self.test_mode:
             rect=pygame.Surface(self.hit_box.size).convert_alpha()
             rect.fill((200,0,0,100))
             screen.blit(rect, (self.hit_box.x - camera[0], self.hit_box.y - camera[1]))
-            if self.attack_on and self.reload==0:
-                attack_range = pygame.Rect(10, 10, 100, 100)
-                attack_range_surface = pygame.Surface(attack_range.size).convert_alpha()
-                attack_range_surface.fill((250, 150, 71, 100))
-                if self.side_left:
-                    attack_range.midright = self.hit_box.midleft
-                else:
-                    attack_range.midleft = self.hit_box.midright
 
-                screen.blit(attack_range_surface,(attack_range.x - camera[0], attack_range.y - camera[1]))
+            if self.attack_on and self.reload==0:
+
+                attack_range_surface = pygame.Surface(self.attack_range.size).convert_alpha()
+                attack_range_surface.fill((250, 150, 71, 100))
+
+                #REDUNDANTE
+                #---------------------------------------------------------
+                if self.side_left:
+                    self.attack_range.midright = self.hit_box.midleft
+                else:
+                    self.attack_range.midleft = self.hit_box.midright
+                #---------------------------------------------------------
+
+                screen.blit(attack_range_surface,(self.attack_range.x - camera[0], self.attack_range.y - camera[1]))
+
     def animation(self):
 
 
@@ -253,14 +290,22 @@ class Player(caracter.Caracter):
             return True
         return False
     def play_sound(self):
-        Player.sound[self.frame_on].play()
+        try:
+
+            Player.sound[self.frame_on].play()
+        except:
+            pass
+
 
     def damage(self,damage_points):
         if self.block>0 and self.block<15:
             self.play_sound()
-        elif self.block>15:
+        elif self.block>15 or self.hurt==0:
+            self.hurt=70
             super(Player, self).damage(int(damage_points/2))
+            self.movement[1] = -4
         else:
+            self.hurt = 70
             super(Player, self).damage(damage_points)
 
             self.movement[1] = -4
@@ -326,4 +371,15 @@ class Player(caracter.Caracter):
             if self.hit_box.colliderect(barreira.rect):
                 collision.append(barreira)
         return collision
+    def closer_enemy(self,enemy_list):
+        enemy=enemy_list[0]
+        distance=pow(pow(enemy.hit_box.centerx-self.hit_box.centerx,2)+pow(enemy.hit_box.centery-self.hit_box.centery,2),0.5)
+        for e in enemy_list:
+            e_distance=pow(pow(e.hit_box.centerx - self.hit_box.centerx, 2) + pow(e.hit_box.centery - self.hit_box.centery,2), 0.5)
+            if e_distance <distance:
+                distance =e_distance
+                enemy=e
+        return  enemy
+
+
 

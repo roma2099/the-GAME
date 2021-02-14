@@ -1,6 +1,7 @@
 import  pygame,enemy
 
 class Goblin(enemy.Enemy):
+    volume=1
     frame ={}
     sound={}
     def __init__(self,position=(0,0),index=0):
@@ -10,15 +11,16 @@ class Goblin(enemy.Enemy):
 
         self.hit_box.center=self.rect.center
         self.reload = 0
-        self.reload_max=20
-        self.hp = 200
-        self.hp_max = 5000
+        self.reload_max=30
+        self.hp = 500
+        self.hp_max = 500
         self.test_mode=False
 
 
     def draw(self, screen, camera=(0, 0)):
-
-        screen.blit(pygame.transform.flip(Goblin.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]-21))
+        self.draw_live_bar(screen, camera)
+        if self.rect.centerx - camera[0] > -100 and self.rect.centerx - camera[0] < 1400 and self.rect.centery - camera[1] > -50 and self.rect.centery - camera[1] < 900:
+            screen.blit(pygame.transform.flip(Goblin.frame[self.frame_on][int(self.frame_index)], self.side_left, False),(self.rect.x - camera[0], self.rect.y - camera[1]-21))
 
         if self.test_mode :
             rect = pygame.Surface(self.hit_box.size).convert_alpha()
