@@ -138,7 +138,7 @@ class Player(caracter.Caracter):
         #            self.attack_combo=1
 
         # if u take the "and down ==False something happends"
-        if jump and self.num_jumps < 2 and down == False and self.roll_on==False:
+        if jump and self.num_jumps < 2 and down == False and self.roll_on==False and self.hit_box.height!=2*3:
             self.grab_on=False
             self.movement[1] = -17
             self.num_jumps += 1

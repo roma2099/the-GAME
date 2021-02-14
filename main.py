@@ -346,7 +346,7 @@ def level_1(volume):
 
 
     while True:
-        pygame.display.set_caption(str(int(clock.get_fps())))
+        pygame.display.set_caption(titulo+"("+str(int(clock.get_fps()))+")")
        # screen.blit(background, (0,0))
 
 
@@ -524,6 +524,7 @@ pygame.init()
 
 screen_size = (340 * 4, 190 * 4)
 screen = pygame.display.set_mode(screen_size)
+pygame.display.set_caption(titulo)
 
 bg = []
 
