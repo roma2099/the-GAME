@@ -254,7 +254,7 @@ def editor():
                     print (generate_level(tile_list))
 
                 if event.key == pygame.K_s:
-                    with open("maps/map_2.txt", "wb") as map_file:
+                    with open("maps/map_1.txt", "wb") as map_file:
                         for list in tipo_list:
                           for element in list:
                               element.rect.x *= 2
