@@ -2,9 +2,7 @@
 ------------------------------------------------------
                      Dead Souls
 ------------------------------------------------------
-Elaborado por:
-    Romário Brito
-    Aldair Esteves
+
     
 Controles:
     j - atacar
@@ -20,7 +18,7 @@ Requisitos minimos:
     windows 10
 
 Como Rodar:
-    Apenas rodar o ficheiro main.py .
+    Apenas rodar o ficheiro main.py ou abrir o executacel .
     
     
   
